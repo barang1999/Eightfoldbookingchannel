@@ -1,0 +1,185 @@
+{
+  "perNight": "每晚",
+  "max": "最多",
+  "roomTypes": {
+    "deluxePoolAccess": "豪华泳池通道",
+    "suitePoolAccess": "带泳池通道的套房",
+    "suitePrivatePool": "带私人泳池的套房",
+    "deluxeDoubleTwin": "豪华双人或双床房（泳池景）",
+    "deluxeTriple": "豪华三人房",
+    "deluxeFamily": "豪华家庭套房",
+    "Deluxe Family Suite": "豪华家庭套房",
+    "Deluxe Pool Access": "豪华泳池通道",
+    "Suite Pool Access": "带泳池通道的套房",
+    "Suite with Private Pool": "带私人泳池的套房",
+    "Deluxe Double or Twin Room with Pool View": "豪华双人或双床房（泳池景）",
+    "Deluxe Triple Room": "豪华三人房"
+  },
+  "roomDetails": {
+    "description": "Eightfold Urban Villas 提供豪华住宿，四周环绕热带绿意。设有壮观的室外泳池、按摩服务、全空调咖啡厅和现代经典高档餐厅。现代高棉风格的单元配有 Wi-Fi 和平板电视。私人阳台配有户外座椅，可俯瞰泳池或周围绿意。客房服务供应至晚上 9 点。房内配备冰箱和保险箱。Eightfold Urban 旅游咨询台可协助旅行安排，前台 24 小时为您服务。",
+    "featuresTitle": "客房设施：",
+    "features": {
+      "Balcony": "阳台",
+      "Pool View": "泳池景",
+      "Garden view": "花园景",
+      "Landmark view": "地标景观",
+      "Inner courtyard view": "内院景",
+      "Air conditioning": "空调",
+      "Spa bath": "按摩浴缸",
+      "Patio": "露台",
+      "Ensuite bathroom": "私人浴室",
+      "Flat-screen TV": "平板电视",
+      "Soundproofing": "隔音",
+      "Terrace": "平台",
+      "Minibar": "迷你吧",
+      "Free WiFi": "免费无线网络",
+      "Private Suite": "私人套房"
+    },
+    "surface": "面积：{{value}} m²",
+    "beds": "床型：{{value}}",
+    "view": "景观：{{value}}",
+    "poolAccess": "泳池通道",
+    "night": "{{count}}晚",
+    "night_plural": "{{count}}晚"
+  },
+  "bathroomFeatures": {
+    "title": "浴室设施：",
+    "items": {
+      "Hot tub": "热水浴缸",
+      "Bathrobe": "浴袍",
+      "Bidet": "坐浴盆",
+      "Bath or shower": "浴缸或淋浴",
+      "Linen": "床单",
+      "Free toiletries": "免费洗浴用品",
+      "Additional bathroom": "额外的浴室",
+      "Toilet": "厕所",
+      "Towels": "毛巾",
+      "Toilet paper": "卫生纸"
+    }
+  },
+  "media": {
+    "title": "媒体与技术：",
+    "items": {
+      "Flat-screen TV": "平板电视",
+      "Telephone": "电话",
+      "TV": "电视",
+      "High speed internet": "高速上网"
+    }
+  },
+  "food": {
+    "title": "餐饮：",
+    "items": {
+      "Minibar": "迷你吧",
+      "Tea/Coffee maker": "茶/咖啡机",
+      "Refrigerator": "冰箱",
+      "Electric kettle": "电热水壶"
+    }
+  },
+  "outdoor": {
+    "title": "户外：",
+    "items": {
+      "Terrace": "平台",
+      "Garden view": "花园景",
+      "Balcony": "阳台"
+    }
+  },
+  "general": {
+    "title": "综合设施：",
+    "items": {
+      "Fan": "风扇",
+      "Desk": "书桌",
+      "Sofa": "沙发",
+      "Wake-up service": "叫醒服务",
+      "Carpeted": "地毯",
+      "Wardrobe or closet": "衣柜",
+      "Seating Area": "休息区",
+      "Clothes rack": "衣架",
+      "Socket near the bed": "床边插座",
+      "Soundproofing": "隔音"
+    }
+  },
+  "accessibility": {
+    "title": "无障碍设施：",
+    "items": {
+      "Safety deposit box": "保险箱"
+    }
+  },
+  "layout": {
+    "title": "特殊布局：",
+    "items": {
+      "Entire unit located on ground floor": "整套客房位于地面楼层",
+      "Entire unit wheelchair accessible": "整套客房无障碍"
+    }
+  },
+  "actions": {
+    "seeDetails": "查看房间详情",
+    "specialOffer": "特别优惠",
+    "breakfastIncluded": "含早餐",
+    "promoRate": "促销价",
+    "rooms": "房间：",
+    "chooseRoom": "选择此房间",
+    "publicRateFrom": "公开价格从 {{value}} 起",
+    "freeCancellation": "免费取消"
+  },
+  "searchFlow": {
+    "search": "搜索",
+    "selectRoom": "选择房间",
+    "addOns": "附加服务",
+    "guestInfo": "客户信息",
+    "enhance": "通过个性化服务提升您的入住体验",
+    "addonsDesc": "为您的舒适与便利量身打造的服务与体验"
+  },
+  "checkout": {
+    "confirm": "确认",
+    "help": "帮助与支持"
+  },
+  "summary": {
+    "subtotal": "小计",
+    "tax": "税费与增值税",
+    "total": "总价（含税）"
+  },
+  "navigation": {
+    "back": "← 返回",
+    "continue": "继续 →",
+    "skip": "跳过此步骤 →"
+  },
+  "guestInfo": {
+    "title": "请填写您的信息",
+    "fields": {
+      "title": "称谓",
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "邮箱",
+      "phone": "电话",
+      "country": "国家",
+      "nationality": "国籍",
+      "purpose": "入住目的（可选）"
+    },
+    "privacy": "我同意隐私政策，并确认上述信息准确无误。"
+  },
+  "arrival": {
+    "title": "预计到达时间",
+    "note": "您的客房将在 14:00 后准备就绪",
+    "desk": "前台全天 24 小时为您服务",
+    "selectTime": "添加预计到达时间（可选）",
+    "timezoneNote": "时间以暹粒时区为准"
+  },
+  "viewOptions": {
+    "garden_view": "花园景",
+    "pool_view": "泳池景",
+    "landmark_view": "地标景观",
+    "inner_courtyard_view": "内院景",
+    "pool_access": "泳池通道"
+  },
+  "bedTypes": {
+    "double": "双人床",
+    "single": "单人床",
+    "or": "或",
+    "and": "和"
+  },
+  "capacity": {
+    "adults": "成人",
+    "children": "儿童",
+    "child": "儿童"
+  }
+}

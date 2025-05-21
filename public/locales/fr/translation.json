@@ -1,0 +1,185 @@
+{
+  "max": "max",
+  "perNight": "/ nuit",
+  "roomTypes": {
+    "deluxePoolAccess": "Accès Piscine de Luxe",
+    "suitePoolAccess": "Suite avec Accès Piscine",
+    "suitePrivatePool": "Suite avec Piscine Privée",
+    "deluxeDoubleTwin": "Chambre Double ou Lits Jumeaux de Luxe avec Vue sur la Piscine",
+    "deluxeTriple": "Chambre Triple de Luxe",
+    "deluxeFamily": "Suite Familiale de Luxe",
+    "Deluxe Family Suite": "Suite Familiale de Luxe",
+    "Deluxe Pool Access": "Accès Piscine de Luxe",
+    "Suite Pool Access": "Suite avec Accès Piscine",
+    "Suite with Private Pool": "Suite avec Piscine Privée",
+    "Deluxe Double or Twin Room with Pool View": "Chambre Double ou Lits Jumeaux de Luxe avec Vue sur la Piscine",
+    "Deluxe Triple Room": "Chambre Triple de Luxe"
+  },
+  "roomDetails": {
+    "description": "Eightfold Urban Villas propose des hébergements luxueux entourés de verdure tropicale. Elle dispose d'une superbe piscine extérieure, de services de massage, d'un café entièrement climatisé et d'un restaurant gastronomique moderne classique. Les unités de style khmer moderne sont bien équipées, avec accès Wi-Fi et télévision à écran plat. Les balcons privés disposent de sièges extérieurs, avec vue sur la piscine ou la verdure environnante. Un service d'étage est disponible jusqu'à 21h. Un réfrigérateur et un coffre-fort sont fournis pour plus de commodité. Un bureau d'excursions à Eightfold Urban vous aide à organiser vos voyages. Le personnel de la réception est disponible 24h/24.",
+    "featuresTitle": "Caractéristiques de la chambre :",
+    "features": {
+      "Balcony": "Balcon",
+      "Pool View": "Vue sur la piscine",
+      "Garden view": "Vue sur le jardin",
+      "Landmark view": "Vue sur monument",
+      "Inner courtyard view": "Vue sur cour intérieure",
+      "Air conditioning": "Climatisation",
+      "Spa bath": "Bain à remous",
+      "Patio": "Patio",
+      "Ensuite bathroom": "Salle de bain privative",
+      "Flat-screen TV": "Téléviseur à écran plat",
+      "Soundproofing": "Insonorisation",
+      "Terrace": "Terrasse",
+      "Minibar": "Minibar",
+      "Free WiFi": "Wi-Fi gratuit",
+      "Private Suite": "Suite Privée"
+    },
+    "surface": "Superficie : {{value}} m²",
+    "beds": "Lits : {{value}}",
+    "view": "Vue : {{value}}",
+    "poolAccess": "Accès Piscine",
+    "night": "{{count}} nuit",
+    "night_plural": "{{count}} nuits"
+  },
+  "bathroomFeatures": {
+    "title": "Équipements de la salle de bain :",
+    "items": {
+      "Hot tub": "Bain à remous",
+      "Bathrobe": "Peignoir",
+      "Bidet": "Bidet",
+      "Bath or shower": "Bain ou douche",
+      "Linen": "Draps",
+      "Free toiletries": "Articles de toilette gratuits",
+      "Additional bathroom": "Salle de bain supplémentaire",
+      "Toilet": "Toilettes",
+      "Towels": "Serviettes",
+      "Toilet paper": "Papier toilette"
+    }
+  },
+  "media": {
+    "title": "Médias et Technologies :",
+    "items": {
+      "Flat-screen TV": "Téléviseur à écran plat",
+      "Telephone": "Téléphone",
+      "TV": "TV",
+      "High speed internet": "Internet haut débit"
+    }
+  },
+  "food": {
+    "title": "Nourriture et Boissons :",
+    "items": {
+      
+      "Tea/Coffee maker": "Thé/Café",
+      "Refrigerator": "Réfrigérateur",
+      "Electric kettle": "Bouilloire électrique",
+      "Minibar": "Minibar"
+    }
+  },
+  "outdoor": {
+    "title": "Extérieur :",
+    "items": {
+      "Terrace": "Terrasse",
+      "Garden view": "Vue sur le jardin",
+      "Balcony": "Balcon"
+    }
+  },
+  "general": {
+    "title": "Équipements généraux :",
+    "items": {
+      "Fan": "Ventilateur",
+      "Desk": "Bureau",
+      "Sofa": "Canapé",
+      "Wake-up service": "Service de réveil",
+      "Carpeted": "Moquette",
+      "Wardrobe or closet": "Armoire ou placard",
+      "Seating Area": "Coin salon",
+      "Clothes rack": "Portant",
+      "Socket near the bed": "Prise près du lit"
+    }
+  },
+  "accessibility": {
+    "title": "Accessibilité :",
+    "items": {
+      "Safety deposit box": "Coffre-fort"
+    }
+  },
+  "layout": {
+    "title": "Disposition spéciale :",
+    "items": {
+      "Entire unit located on ground floor": "Unité entièrement située au rez-de-chaussée",
+      "Entire unit wheelchair accessible": "Unité accessible en fauteuil roulant"
+    }
+  },
+  "actions": {
+    "seeDetails": "Voir les détails de la chambre",
+    "specialOffer": "Offre spéciale",
+    "breakfastIncluded": "Petit-déjeuner inclus",
+    "promoRate": "Tarif promotionnel",
+    "rooms": "Chambres :",
+    "chooseRoom": "Choisir cette chambre",
+    "publicRateFrom": "Tarif public à partir de {{value}}",
+    "freeCancellation": "Annulation gratuite"
+  },
+  "searchFlow": {
+    "search": "Rechercher",
+    "selectRoom": "Sélectionner une chambre",
+    "addOns": "Suppléments",
+    "guestInfo": "Informations sur le client",
+    "enhance": "Améliorez votre séjour avec des suppléments personnalisés",
+    "addonsDesc": "Expériences et services conçus pour votre confort et votre commodité"
+  },
+  "checkout": {
+    "confirm": "Confirmer",
+    "help": "Assistance & Support"
+  },
+  "summary": {
+    "subtotal": "Sous-total",
+    "tax": "Taxes & TVA",
+    "total": "Total (TTC)"
+  },
+  "navigation": {
+    "back": "← Retour",
+    "continue": "Continuer →",
+    "skip": "Passer cette étape →"
+  },
+  "guestInfo": {
+    "title": "Faisons connaissance",
+    "fields": {
+      "title": "Titre",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "Email",
+      "phone": "Téléphone",
+      "country": "Pays",
+      "nationality": "Nationalité",
+      "purpose": "Motif du séjour (optionnel)"
+    },
+    "privacy": "Je consens à la politique de confidentialité et confirme l'exactitude des informations ci-dessus."
+  },
+  "arrival": {
+    "title": "Heure d'arrivée",
+    "note": "Votre chambre sera prête pour l'enregistrement à 14h00",
+    "desk": "Réception ouverte 24h/24 – Assistance disponible à tout moment !",
+    "selectTime": "Ajoutez votre heure d'arrivée estimée (optionnel)",
+    "timezoneNote": "L'heure correspond au fuseau horaire de Siem Reap"
+  },
+  "viewOptions": {
+    "garden_view": "Vue sur le jardin",
+    "pool_view": "Vue sur la piscine",
+    "landmark_view": "Vue sur monument",
+    "inner_courtyard_view": "Vue sur cour intérieure",
+    "pool_access": "Accès Piscine"
+  },
+  "bedTypes": {
+    "double": "Lit double",
+    "single": "Lit simple",
+    "or": "ou",
+    "and": "et"
+  },
+  "capacity": {
+    "adults": "adultes",
+    "children": "enfants",
+    "child": "enfant"
+  }
+}

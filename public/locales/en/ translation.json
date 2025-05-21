@@ -1,0 +1,214 @@
+{
+  "soldOut": "Sold Out",
+  "available": "Available",
+  "max": "max",
+  "perNight": "/ night",
+  "viewOptions": {
+    "garden_view": "Garden View",
+    "pool_view": "Pool View",
+    "landmark_view": "Landmark View",
+    "inner_courtyard_view": "Inner Courtyard View",
+    "pool_access": "Pool Access"
+  },
+  "bedTypes": {
+    "double": "Double bed",
+    "single": "Single bed",
+    "or": "or",
+    "and": "and"
+  },
+  "capacity": {
+    "adults": "adults",
+    "children": "children",
+    "child": "child"
+  },
+  "roomTypes": {
+    "deluxePoolAccess": "Deluxe Pool Access",
+    "suitePoolAccess": "Suite Pool Access",
+    "suitePrivatePool": "Suite with Private Pool",
+    "deluxeDoubleTwin": "Deluxe Double or Twin Room with Pool View",
+    "deluxeTriple": "Deluxe Triple Room",
+    "deluxeFamily": "Deluxe Family Suite"
+  },
+  "roomDetails": {
+    "featuresTitle": "Room Features:",
+    "features": {
+      "Balcony": "Balcony",
+      "Pool View": "Pool View",
+      "Garden view": "Garden view",
+      "Landmark view": "Landmark view",
+      "Inner courtyard view": "Inner courtyard view",
+      "Air conditioning": "Air conditioning",
+      "Spa bath": "Spa bath",
+      "Patio": "Patio",
+      "Ensuite bathroom": "Ensuite bathroom",
+      "Flat-screen TV": "Flat-screen TV",
+      "Soundproofing": "Soundproofing",
+      "Terrace": "Terrace",
+      "Minibar": "Minibar",
+      "Free WiFi": "Free WiFi"
+    },
+    "surface": "Surface: {{value}} m²",
+    "beds": "Beds: {{value}}",
+    "view": "View: {{value}}",
+    "poolAccess": "Pool Access",
+    "description": "Eightfold Urban Villas offers luxurious accommodations surrounded by tropical greenery. It features a spectacular outdoor pool, massage services, fully air-conditioning coffee shop and a classic modern fine-dining restaurant. The modern Khmer-style units are well-furnished, featuring Wi-Fi access and flat-screen TV. Private balconies have outdoor seating, with views of the pool or surrounding greenery. Room service is available until 9pm. A fridge and safe are provided for convenience. A tour desk at Eightfold Urban helps with travel arrangements. The staff at front desk can be any of assistance 24/7.",
+    "night": "{{count}} night",
+    "night_plural": "{{count}} nights"
+  },
+  "bathroomFeatures": {
+    "title": "Bathroom Features:",
+    "items": {
+      "Hot tub": "Hot tub",
+      "Bathrobe": "Bathrobe",
+      "Bidet": "Bidet",
+      "Bath or shower": "Bath or shower",
+      "Linen": "Linen",
+      "Free toiletries": "Free toiletries",
+      "Additional bathroom": "Additional bathroom",
+      "Toilet": "Toilet",
+      "Towels": "Towels",
+      "Toilet paper": "Toilet paper"
+    }
+  },
+  "media": {
+    "title": "Media & Technology:",
+    "items": {
+      "Flat-screen TV": "Flat-screen TV",
+      "Telephone": "Telephone",
+      "TV": "TV",
+      "High speed internet": "High speed internet"
+    }
+  },
+  "food": {
+    "title": "Food & Drink:",
+    "items": {
+      "Minibar": "Minibar",
+      "Tea/Coffee maker": "Tea/Coffee maker",
+      "Refrigerator": "Refrigerator",
+      "Electric kettle": "Electric kettle"
+    }
+  },
+  "outdoor": {
+    "title": "Outdoor:",
+    "items": {
+      "Terrace": "Terrace",
+      "Balcony": "Balcony",
+      "Patio": "Patio",
+      "Garden view": "Garden view"
+    }
+  },
+  "general": {
+    "title": "General Facilities:",
+    "items": {
+      "Soundproofing": "Soundproofing",
+      "Fan": "Fan",
+      "Desk": "Desk",
+      "Sofa": "Sofa",
+      "Wake-up service": "Wake-up service",
+      "Carpeted": "Carpeted",
+      "Wardrobe or closet": "Wardrobe or closet",
+      "Seating Area": "Seating Area",
+      "Clothes rack": "Clothes rack",
+      "Socket near the bed": "Socket near the bed"
+    }
+  },
+  "accessibility": {
+    "title": "Accessibility:",
+    "items": {
+      "Safety deposit box": "Safety deposit box"
+    }
+  },
+  "layout": {
+    "title": "Special Layout:",
+    "items": {
+      "Entire unit located on ground floor": "Entire unit located on ground floor",
+      "Entire unit wheelchair accessible": "Entire unit wheelchair accessible"
+    }
+  },
+  "actions": {
+    "seeDetails": "See the room details",
+    "specialOffer": "Special Offer",
+    "breakfastIncluded": "Breakfast Included",
+    "promoRate": "Promo Rate",
+    "rooms": "Rooms:",
+    "chooseRoom": "Choose this room",
+    "publicRateFrom": "Public rate from {{value}}",
+    "freeCancellation": "Free cancellation",
+    "soldOut": "Sold Out"
+  },
+  "searchFlow": {
+    "search": "Search",
+    "selectRoom": "Select Room",
+    "addOns": "Add-ons",
+    "guestInfo": "Guest Information",
+    "enhance": "Enhance Your Stay with Personalized Add-ons",
+    "addonsDesc": "Curated experiences and services designed for your comfort and convenience"
+  },
+  "addons": {
+    "airportShuttle": {
+      "title": "Airport Shuttle",
+      "desc": "As a valued guest, enjoy seamless airport transfers with our exclusive shuttle service. Experience comfortable, private transportation and the attentive service you expect from our hotel.",
+      "pricing": "Small Car: $35, Mini Van: $45",
+      "notes": "(not included 10% VAT)"
+    },
+    "smallTour": {
+      "title": "Small Tour",
+      "desc": "Journey to the Lost Temples of the Khmer Kingdom. Step back in time and uncover the mysteries of Cambodia’s ancient wonders...",
+      "included": "Transportation",
+      "excluded": "Temple Ticket"
+    },
+    "bigTour": {
+      "title": "Big Tour",
+      "desc": "A Grand Adventure Through the Khmer Empire. Embark on a breathtaking journey across the most iconic and hidden treasures..."
+    }
+  },
+  "guestInfo": {
+    "title": "let's get acquainted",
+    "fields": {
+      "title": "Title",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "nationality": "Nationality",
+      "purpose": "Purpose of Stay (optional)"
+    },
+    "privacy": "I agree to the privacy policy and confirm the above details are correct."
+  },
+  "requests": {
+    "title": "Special requests",
+    "note": "While we cannot guarantee all special requests, we’ll do our very best to accommodate them...",
+    "placeholder": "Write your request here..."
+  },
+  "arrival": {
+    "title": "Your arrival time",
+    "note": "Your room will be ready for check-in at 14:00",
+    "desk": "24-hour front desk – Help whenever you need it!",
+    "selectTime": "Add your estimated arrival time (optional)",
+    "timezoneNote": "Time is for Siem Reap time zone"
+  },
+  "checkout": {
+    "confirm": "Confirm",
+    "help": "Help & Support"
+  },
+  "hotel": {
+    "name": "Eightfold Urban Resort",
+    "reviews": "see reviews",
+    "checkin": "Check-in 14:00 • Check-out 11:00"
+  },
+  "summary": {
+    "subtotal": "Subtotal",
+    "tax": "Taxes & VAT",
+    "total": "Total (incl. tax)"
+  },
+  "navigation": {
+    "back": "← Go Back",
+    "continue": "Continue →",
+    "skip": "Skip This Step →"
+  },
+  "privacyPolicy": {
+    "title": "Privacy Policy",
+    "body": "The data collected are subject to processing by Eightfold Urban Resort for the purpose of managing your bookings and stays..."
+  }
+}

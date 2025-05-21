@@ -1,0 +1,28 @@
+Key,English
+room_name_1,Deluxe Pool Access
+room_features,"['Balcony', 'Pool View', 'Garden view', 'Landmark view', 'Inner courtyard view', 'Air conditioning', 'Spa bath', 'Patio', 'Ensuite bathroom', 'Flat-screen TV', 'Soundproofing', 'Terrace', 'Minibar', 'Free WiFi']"
+surface,Surface: 40 m²
+beds,Beds: 1 large double bed or 2 single beds
+view,View: Pool Access
+description,"Eightfold Urban Villas offers luxurious accommodations surrounded by tropical greenery. It features a spectacular outdoor pool, massage services, fully air-conditioning coffee shop and a classic modern fine-dining restaurant. The modern Khmer-style units are well-furnished, featuring Wi-Fi access and flat-screen TV. Private balconies have outdoor seating, with views of the pool or surrounding greenery. Room service is available until 9pm. A fridge and safe are provided for convenience. A tour desk at Eightfold Urban helps with travel arrangements. The staff at front desk can be any of assistance 24/7."
+bathroom_features,"['Hot tub', 'Bathrobe', 'Bidet', 'Bath or shower', 'Linen', 'Free toiletries', 'Additional bathroom', 'Toilet', 'Towels', 'Toilet paper']"
+media_tech,"['Flat-screen TV', 'Telephone', 'TV', 'High speed internet']"
+food_drink,"['Minibar', 'Tea/Coffee maker', 'Refrigerator', 'Electric kettle']"
+outdoor,"['Terrace', 'Balcony', 'Patio', 'Garden view']"
+general_facilities,"['Soundproofing', 'Fan', 'Desk', 'Sofa', 'Wake-up service', 'Carpeted', 'Wardrobe or closet', 'Seating Area', 'Clothes rack', 'Socket near the bed']"
+accessibility,['Safety deposit box']
+special_layout,"['Entire unit located on ground floor', 'Entire unit wheelchair accessible']"
+select_room,Choose your room
+addons,Add-ons
+guest_info,Guest Information
+add_on_title,Enhance Your Stay with Personalized Add-ons
+addon_description,Curated experiences and services designed for your comfort and convenience
+airport_shuttle_title,Airport Shuttle
+airport_shuttle_desc,"As a valued guest, enjoy seamless airport transfers with our exclusive shuttle service. Experience comfortable, private transportation and the attentive service you expect from our hotel."
+shuttle_price,"Car: $35, Van: $45"
+small_tour_title,Small Tour
+small_tour_desc,"Step back in time and uncover the mysteries of Cambodia’s ancient wonders. This immersive journey takes you deep into the heart of the Khmer Empire, where timeless temples stand as echoes of a glorious past. Wander through hidden ruins, admire intricate carvings, and feel the history come alive as you explore these architectural masterpieces."
+big_tour_title,Big Tour
+big_tour_desc,"Embark on a breathtaking journey across the most iconic and hidden treasures of the Khmer Kingdom. This extended tour takes you beyond the well-trodden paths, offering deeper exploration into the magnificent temples and historical sites that define Cambodia’s rich heritage. Marvel at grand structures, walk through ancient corridors, and immerse yourself in the mystical beauty of centuries-old ruins."
+continue,Continue
+privacy_policy,"The data collected are subject to processing by Eightfold Urban Resort for the purpose of managing your bookings and stays, understanding your preferences, improving our services and guest experience, and keeping you informed about updates and offerings from Eightfold Urban Resort..."
