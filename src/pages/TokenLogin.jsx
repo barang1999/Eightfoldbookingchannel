@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithCredential, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../firebase";
 
 export default function TokenLogin() {
@@ -11,19 +10,11 @@ export default function TokenLogin() {
     const redirectBack = new URLSearchParams(window.location.search).get("redirectBack");
 
     if (token) {
-      const credential = GoogleAuthProvider.credential(token);
-      signInWithCredential(auth, credential)
-        .then(() => {
-          if (redirectBack) {
-            window.location.href = redirectBack;
-          } else {
-            navigate("/");
-          }
-        })
-        .catch((err) => {
-          console.error("Token login failed:", err);
-          navigate("/login");
-        });
+      if (redirectBack) {
+        window.location.href = redirectBack;
+      } else {
+        navigate("/");
+      }
     } else if (auth.currentUser) {
       console.log("[TokenLogin] Using currentUser from Firebase.");
       auth.currentUser.getIdToken().then((token) => {
