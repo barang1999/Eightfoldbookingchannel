@@ -22,6 +22,7 @@ import ModifyReservationPage from './pages/ModifyReservationPage';
 import ModifyConfirmationPage from './pages/ModifyConfirmationPage.jsx';
 import ModifySuccessPage from './pages/ModifySuccessPage.jsx';
 import { SelectedRoomsProvider } from './contexts/SelectedRoomsContext';
+import TokenLogin from './pages/TokenLogin.jsx';
 
 function RouterApp() {
   const location = useLocation();
@@ -42,6 +43,7 @@ function RouterApp() {
           <Route path="/modify-reservation/:id" element={<ModifyReservationPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/token-login" element={<TokenLogin />} />
           <Route path="/confirmation" element={<PaymentConfirmationPage />} />
           <Route path="/modification-confirmation" element={<ModifyConfirmationPage />} />
           <Route path="/modification-success/:bookingId" element={<ModifySuccessPage />} />
