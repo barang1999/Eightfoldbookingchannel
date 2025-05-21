@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../firebase";
 
 export default function LoginPage() {
   const { signInWithEmail, signInWithGoogle, signInWithFacebook } = useAuth();
@@ -101,36 +103,21 @@ export default function LoginPage() {
             <button
               onClick={async () => {
                 try {
-                  const lastVisitedPath = localStorage.getItem('lastVisitedPath');
-                  const currentPath = window.location.pathname;
-                  if (!lastVisitedPath && currentPath !== '/login' && currentPath !== '/register') {
-                    localStorage.setItem('lastVisitedPath', currentPath);
-                  }
-
-                  await signInWithGoogle();
-                  const fallbackPath = '/';
-                  const redirectTo = localStorage.getItem('lastVisitedPath');
-                  const validRedirect =
-                    redirectTo &&
-                    redirectTo !== '/login' &&
-                    redirectTo !== '/register' &&
-                    redirectTo !== window.location.pathname;
-
-                  if (validRedirect) {
-                    console.log('Redirecting to last valid path:', redirectTo);
-                    navigate(redirectTo, { replace: true });
-                  } else {
-                    console.log('No valid redirect path. Redirecting to fallback:', fallbackPath);
-                    navigate(fallbackPath, { replace: true });
-                  }
-                  return;
+                  const provider = new GoogleAuthProvider();
+                  const result = await signInWithPopup(auth, provider);
+                  const token = await result.user.getIdToken();
+                  window.location.href = `https://eightfoldbookingchannel.vercel.app/token-login?token=${token}&redirectBack=https://eightfoldurbanresort.vercel.app/`;
                 } catch (err) {
-                  console.error('Google login failed:', err);
+                  console.error("Google login failed:", err);
                 }
               }}
               className="w-full border border-gray-300 text-gray-800 py-3 rounded-[3rem] hover:bg-gray-100 transition flex items-center justify-center gap-4"
             >
-              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" className="h-5 w-5 bg-white rounded-full" />
+              <img
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
+                alt="Google"
+                className="h-5 w-5 bg-white rounded-full"
+              />
               Continue with Google
             </button>
             
