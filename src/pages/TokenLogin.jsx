@@ -24,7 +24,17 @@ export default function TokenLogin() {
           console.error("Token login failed:", err);
           navigate("/login");
         });
+    } else if (auth.currentUser) {
+      console.log("[TokenLogin] Using currentUser from Firebase.");
+      auth.currentUser.getIdToken().then((token) => {
+        if (redirectBack) {
+          window.location.href = redirectBack;
+        } else {
+          navigate("/");
+        }
+      });
     } else {
+      console.warn("[TokenLogin] No token or currentUser found.");
       navigate("/login");
     }
   }, [navigate]);
