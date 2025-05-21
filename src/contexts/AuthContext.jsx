@@ -8,7 +8,8 @@ import {
   signOut,
   createUserWithEmailAndPassword,
   setPersistence,
-  browserLocalPersistence
+  browserLocalPersistence,
+  getRedirectResult
 } from 'firebase/auth';
 import { auth } from '../firebase'; // from your firebase.js
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
@@ -23,6 +24,12 @@ const facebookProvider = new FacebookAuthProvider();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getRedirectResult(auth).catch(() => {
+      // Prevent Firebase from attempting to resume a redirect session
+    });
+  }, []);
 
   useEffect(() => {
     setPersistence(auth, browserLocalPersistence).then(() => {
