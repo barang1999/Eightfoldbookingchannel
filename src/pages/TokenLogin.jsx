@@ -1,3 +1,4 @@
+import { signInWithCustomToken } from "firebase/auth";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
@@ -10,11 +11,18 @@ export default function TokenLogin() {
     const redirectBack = new URLSearchParams(window.location.search).get("redirectBack");
 
     if (token) {
-      if (redirectBack) {
-        window.location.href = redirectBack;
-      } else {
-        navigate("/");
-      }
+      signInWithCustomToken(auth, token)
+        .then(() => {
+          if (redirectBack) {
+            window.location.href = redirectBack;
+          } else {
+            navigate("/");
+          }
+        })
+        .catch((err) => {
+          console.error("Custom token login failed:", err);
+          navigate("/login");
+        });
     } else if (auth.currentUser) {
       console.log("[TokenLogin] Using currentUser from Firebase.");
       auth.currentUser.getIdToken().then((token) => {
