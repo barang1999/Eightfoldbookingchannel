@@ -362,7 +362,7 @@ const HomeContent = () => {
       <main className="bg-[#f9f9f9] min-h-screen py-6 pb-32">
         <SupportButton
           propertyId={property._id}
-          className="fixed bottom-32 right-0 md:bottom-12 md:right-6 z-40"
+          className="fixed bottom-24 right-0 md:bottom-12 md:right-6 z-50"
         />
         <div className="max-w-7xl mx-auto px-3 sm:px-4">
           <div className="flex flex-col lg:flex-row gap-5">
