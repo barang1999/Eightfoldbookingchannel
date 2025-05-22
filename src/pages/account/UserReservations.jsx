@@ -1,4 +1,16 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+// Attempt to import toast from react-hot-toast, fallback to custom modal if not available
+let toast;
+try {
+  // eslint-disable-next-line import/no-extraneous-dependencies
+  // @ts-ignore
+  // Dynamic import for environments where react-hot-toast may not be installed
+  // This will not break SSR or tests
+  // eslint-disable-next-line global-require
+  toast = require("react-hot-toast").toast;
+} catch (e) {
+  toast = null;
+}
 import { useCurrency } from "../../contexts/CurrencyProvider";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { generateBookingPDF } from "../../utils/generateBookingPDF";
@@ -30,6 +42,7 @@ import MapModal from "../../components/MapModal";
 import CancelReservationModal from "../../components/CancelReservationModal";
 import SupportButton from "../../components/SupportButton";
 import TourDetailModal from "../../components/TourDetailModal";
+import ModifyRequestModal from "../../components/ModifyRequestModal";
 
 const BookingCard = ({ booking, onCancelled, propertyEmail }) => {
   const navigate = useNavigate();
@@ -199,18 +212,16 @@ const BookingCard = ({ booking, onCancelled, propertyEmail }) => {
               </span>
             )}
           </h2>
-          <p className="text-xs sm:text-sm text-gray-500">
-            Booking ID: {booking.referenceNumber}
-          </p>
-          <p className="text-xs sm:text-sm text-gray-500">
+          <p className="text-sm text-gray-600">Booking ID: <span className="font-medium">{booking.referenceNumber}</span></p>
+          <p className="text-sm text-gray-600">
             {new Date(booking.checkIn).toLocaleDateString("en-US", {
-              year: "numeric", month: "short", day: "numeric"
+              year: "numeric", month: "long", day: "numeric"
             })} → {new Date(booking.checkOut).toLocaleDateString("en-US", {
-              year: "numeric", month: "short", day: "numeric"
+              year: "numeric", month: "long", day: "numeric"
             })}
           </p>
-          <p className="text-xs sm:text-sm text-gray-600">
-            Booked for: <span className="font-semibold text-black-600">{booking.fullName || "Guest"}</span>
+          <p className="text-sm text-gray-600">
+            Booked for: <span className="font-semibold text-black">{booking.fullName || "Guest"}</span>
           </p>
         </div>
       </div>
@@ -401,6 +412,7 @@ const BookingCard = ({ booking, onCancelled, propertyEmail }) => {
             >
               <Pencil size={16} className="inline mr-1" /> Modify Reservation
             </button>
+            
             <button
               className="px-3 py-1 text-sm rounded-full border border-[#A58E63] text-black hover:bg-[#A58E63]/10 transition inline-flex items-center gap-1"
               onClick={() => setIsCancelModalOpen(true)}
@@ -585,6 +597,9 @@ const ReservationsSection = () => {
   // Modal state for TourDetailModal
   const [selectedTour, setSelectedTour] = useState(null);
   const [isTourModalOpen, setIsTourModalOpen] = useState(false);
+  // Modal state for ModifyRequestModal
+  const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
+  const [selectedTourForModify, setSelectedTourForModify] = useState(null);
 
   const fetchBookings = useCallback(async () => {
     if (!user?.uid) return;
@@ -760,28 +775,42 @@ const ReservationsSection = () => {
             <div className="space-y-4">
               {tourBookings.map((tour) => (
                 <div key={tour._id} className="border p-4 rounded shadow-sm">
-                  <h2
-                    onClick={async () => {
-                      try {
-                        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/services/${tour.tourId}`);
-                        setSelectedTour({
-                          ...res.data,
-                          transportType: tour.transportType,
-                          time: tour.time,
-                          date: tour.date,
-                          subtotal: tour.subtotal,
-                          total: tour.total,
-                          specialRequest: tour.specialRequest,
-                        });
-                        setIsTourModalOpen(true);
-                      } catch (err) {
-                        console.error("❌ Failed to fetch full tour data:", err);
-                      }
-                    }}
-                    className="font-semibold text-lg text-theme cursor-pointer hover:underline"
-                  >
-                    {tour.tourType}
-                  </h2>
+                  <div className="flex items-center justify-between gap-4 mb-2 flex-wrap sm:flex-nowrap">
+                    <h2
+                      onClick={async () => {
+                        try {
+                          const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/services/${tour.tourId}`);
+                          setSelectedTour({
+                            ...res.data,
+                            transportType: tour.transportType,
+                            time: tour.time,
+                            date: tour.date,
+                            subtotal: tour.subtotal,
+                            total: tour.total,
+                            specialRequest: tour.specialRequest,
+                          });
+                          setIsTourModalOpen(true);
+                        } catch (err) {
+                          console.error("❌ Failed to fetch full tour data:", err);
+                        }
+                      }}
+                      className="font-semibold text-lg text-theme cursor-pointer hover:underline"
+                    >
+                      {tour.tourType}
+                    </h2>
+                    <div className="flex flex-wrap items-center gap-2 text-xs">
+                      {tour.status === "confirmed" && (
+                        <span className="inline-flex items-center gap-1 border border-green-600 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                          <CheckCircle className="w-4 h-4" /> Confirmed
+                        </span>
+                      )}
+                      {new Date() - new Date(tour.createdAt) < 4 * 60 * 60 * 1000 && (
+                        <span className="inline-flex items-center gap-1 border border-[#A58E63] text-[#A58E63] px-2 py-0.5 rounded-full font-medium">
+                          <BadgeCheck className="w-4 h-4" /> Recent Booking
+                        </span>
+                      )}
+                    </div>
+                  </div>
                   <p className="text-sm text-gray-600">
                     Date: {new Date(tour.date).toLocaleDateString("en-GB", {
                       day: "numeric",
@@ -806,6 +835,24 @@ const ReservationsSection = () => {
                   </p>
                   <p className="text-sm">Total: ${tour.total.toFixed(2)}</p>
                   {tour.specialRequest && <p className="text-sm">Note: {tour.specialRequest}</p>}
+                  {/* Booked date paragraph */}
+                  <p className="text-xs text-gray-500">
+                    Booked on: {new Date(tour.createdAt).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric"
+                    })}
+                  </p>
+                  {/* Request Modify button */}
+                  <button
+                    className="mt-2 px-3 py-1 text-sm rounded-full border border-[#A58E63] text-black hover:bg-[#A58E63]/10 transition inline-flex items-center gap-1"
+                    onClick={() => {
+                      setSelectedTourForModify(tour);
+                      setIsModifyModalOpen(true);
+                    }}
+                  >
+                    <Pencil size={16} className="inline mr-1" /> Request Modify
+                  </button>
                 </div>
               ))}
             </div>
@@ -815,6 +862,61 @@ const ReservationsSection = () => {
               isOpen={isTourModalOpen}
               onClose={() => setIsTourModalOpen(false)}
               tour={selectedTour}
+            />
+          )}
+          {isModifyModalOpen && selectedTourForModify && (
+            <ModifyRequestModal
+              isOpen={isModifyModalOpen}
+              onClose={() => setIsModifyModalOpen(false)}
+              tour={selectedTourForModify}
+              onSend={async ({ message, tour }) => {
+                try {
+                  await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/contact-message/modify-request`, {
+                    fullName: user?.profile?.fullName || user?.displayName || "Guest",
+                    email: user?.email,
+                    tour,
+                    message
+                  });
+                  if (toast) {
+                    toast.success("Your modification request has been sent successfully.", {
+                      style: {
+                        background: "#fff",
+                        color: "#A58E63",
+                        border: "1px solid #A58E63",
+                      },
+                      iconTheme: {
+                        primary: "#A58E63",
+                        secondary: "#fff",
+                      },
+                    });
+                  } else {
+                    // fallback: show a simple notification at top of page
+                    const notice = document.createElement("div");
+                    notice.innerText = "Your modification request has been sent successfully.";
+                    notice.style.position = "fixed";
+                    notice.style.top = "24px";
+                    notice.style.left = "50%";
+                    notice.style.transform = "translateX(-50%)";
+                    notice.style.background = "#fff";
+                    notice.style.color = "#A58E63";
+                    notice.style.border = "1px solid #A58E63";
+                    notice.style.padding = "12px 28px";
+                    notice.style.borderRadius = "999px";
+                    notice.style.boxShadow = "0 2px 12px rgba(0,0,0,0.07)";
+                    notice.style.zIndex = "9999";
+                    notice.style.fontWeight = "500";
+                    notice.style.fontSize = "15px";
+                    document.body.appendChild(notice);
+                    setTimeout(() => {
+                      if (notice.parentNode) notice.parentNode.removeChild(notice);
+                    }, 2500);
+                  }
+                  setIsModifyModalOpen(false);
+                } catch (err) {
+                  console.error("Failed to send modify request:", err);
+                  alert("There was an error sending your request. Please try again later.");
+                }
+              }}
             />
           )}
         </div>
