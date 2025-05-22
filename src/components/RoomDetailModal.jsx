@@ -122,7 +122,7 @@ export default function RoomDetailModal({ room, onClose }) {
 
           {room.roomFeatures?.length > 0 && (
               <div>
-                <strong>{t("roomDetails.featuresTitle")}</strong>
+                <strong>{t("roomDetails.featuresTitle", "Room Features")}</strong>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2 text-sm text-gray-800">
                   {(() => {
                     const svgIcons = {
@@ -225,14 +225,15 @@ export default function RoomDetailModal({ room, onClose }) {
                 "accessibility",
                 "layout"
               ];
+              // List of [translated section title with fallback, data]
               return [
-                [t("bathroomFeatures.title"), room.bathroomFeatures],
-                [t("media.title"), room.mediaAndTech],
-                [t("food.title"), room.foodAndDrink],
-                [t("outdoor.title"), room.outdoor],
-                [t("general.title"), room.generalFacilities],
-                [t("accessibility.title"), room.accessibility],
-                [t("layout.title"), room.specialLayout]
+                [t("bathroomFeatures.title", "Bathroom Features"), room.bathroomFeatures],
+                [t("media.title", "Media & Technology"), room.mediaAndTech],
+                [t("food.title", "Food & Drink"), room.foodAndDrink],
+                [t("outdoor.title", "Outdoor"), room.outdoor],
+                [t("general.title", "General Facilities"), room.generalFacilities],
+                [t("accessibility.title", "Accessibility"), room.accessibility],
+                [t("layout.title", "Layout"), room.specialLayout]
               ].map(([label, list], idxSection) =>
                 list?.length > 0 ? (
                   <div key={label}>

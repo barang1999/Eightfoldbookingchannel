@@ -600,6 +600,10 @@ const ReservationsSection = () => {
   // Modal state for ModifyRequestModal
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
   const [selectedTourForModify, setSelectedTourForModify] = useState(null);
+  // Tour bookings filter state
+  const [tourFilter, setTourFilter] = useState("all");
+  // Room bookings filter state
+  const [roomFilter, setRoomFilter] = useState("all");
 
   const fetchBookings = useCallback(async () => {
     if (!user?.uid) return;
@@ -630,14 +634,36 @@ const ReservationsSection = () => {
   }, [fetchBookings, fetchTourBookings]);
 
   const now = new Date();
-  const upcomingBookings = bookings
-    .filter(b => new Date(b.checkOut) > now)
-    .sort((a, b) => {
-      if (a.status === "confirmed" && b.status !== "confirmed") return -1;
-      if (a.status !== "confirmed" && b.status === "confirmed") return 1;
-      return new Date(b.checkIn) - new Date(a.checkIn);
+  // Room bookings filter logic
+  const filteredRoomBookings = useMemo(() => {
+    return bookings.filter(b => {
+      const checkIn = new Date(b.checkIn);
+      const checkOut = new Date(b.checkOut);
+      const isPast = checkOut <= now;
+      const isActive = b.status === "confirmed" && now >= checkIn && now <= checkOut;
+      const isUpcoming = checkIn > now;
+
+      if (roomFilter === "past") return isPast;
+      if (roomFilter === "active") return isActive;
+      if (roomFilter === "upcoming") return isUpcoming;
+      return true;
     });
-  const pastBookings = bookings.filter(b => new Date(b.checkOut) <= now);
+  }, [bookings, roomFilter, now]);
+
+  // Filtered tour bookings based on tag
+  const filteredTourBookings = useMemo(() => {
+    return tourBookings.filter((tour) => {
+      const tourDate = new Date(tour.date);
+      const isPast = tourDate < now;
+      const isActive = tour.status === "confirmed" && tourDate.toDateString() === now.toDateString();
+      const isUpcoming = tourDate > now;
+
+      if (tourFilter === "past") return isPast;
+      if (tourFilter === "active") return isActive;
+      if (tourFilter === "upcoming") return isUpcoming;
+      return true;
+    });
+  }, [tourBookings, tourFilter, now]);
 
   // Handler for when a booking is cancelled, triggers re-render
   const handleBookingCancelled = (cancelledId) => {
@@ -692,73 +718,63 @@ const ReservationsSection = () => {
 
       {activeTab === "stays" && (
         <div className="bg-white px-2 sm:px-6 py-6 rounded shadow-sm border">
-          {upcomingBookings.length === 0 && pastBookings.length === 0 ? (
+          {/* Room bookings filter tabs */}
+          <div className="flex gap-3 mb-4">
+            {["all", "upcoming", "active", "past"].map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setRoomFilter(filter)}
+                className={`px-3 py-1 rounded-full border text-sm font-medium ${
+                  roomFilter === filter
+                    ? "border-[#A58E63] text-[#A58E63]"
+                    : "border-gray-300 text-gray-600 hover:text-[#A58E63] hover:border-[#A58E63]"
+                }`}
+              >
+                {filter === "all" ? "All" : filter.charAt(0).toUpperCase() + filter.slice(1)}
+              </button>
+            ))}
+          </div>
+          {filteredRoomBookings.length === 0 ? (
             <>
               <h1 className="text-2xl font-bold mb-2">Your Upcoming Stay</h1>
               <p className="text-gray-600 mb-6">{displayName}, you have no reservations planned at the moment.</p>
-            </>
-          ) : (
-            <>
-              {upcomingBookings.length > 0 && (
-                <>
-                  <h1 className="text-2xl font-bold mb-4">Your Upcoming Stay</h1>
-                  <div className="space-y-4">
-                    {upcomingBookings.map((booking) => (
-                      <BookingCard
-                        key={booking._id}
-                        booking={booking}
-                        onCancelled={handleBookingCancelled}
-                        propertyEmail={booking.propertyEmail}
-                      />
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {pastBookings.length > 0 && (
-                <>
-                  <h1 className="text-2xl font-bold mt-8 mb-4">Past Reservations</h1>
-                  <div className="space-y-4">
-                    {pastBookings.map((booking) => (
-                      <BookingCard
-                        key={booking._id}
-                        booking={booking}
-                        onCancelled={handleBookingCancelled}
-                        propertyEmail={booking.propertyEmail}
-                      />
-                    ))}
-                  </div>
-                </>
-              )}
-            </>
-          )}
-
-          {upcomingBookings.length === 0 && pastBookings.length === 0 && (
-            <div className="relative w-full max-w-4xl mx-auto mt-10">
-              <img
-                src="/public/Angkor.webp"
-                alt="No reservations"
-                className="w-full h-auto rounded-md shadow-sm object-cover"
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-white backdrop-blur-sm rounded-lg shadow-lg p-8 flex flex-col md:flex-row items-center gap-6 max-w-xl w-full">
-                  <Hotel size={48} className="text-[#1c1b4d]" />
-                  <div className="flex-1 text-left">
-                    <h2 className="text-xl font-bold mb-2 text-gray-900">
-                      {displayName}, you have nothing planned right now
-                    </h2>
-                    <p className="text-gray-600 mb-4">
-                      This is the time to start to prepare your next stay.
-                    </p>
-                    <Link
-                      to="/"
-                      className="inline-block bg-[#a18a63] text-white px-6 py-2 rounded-full font-medium shadow hover:opacity-90 transition"
-                    >
-                      Book your next stay
-                    </Link>
+              <div className="relative w-full max-w-4xl mx-auto mt-10">
+                <img
+                  src="/public/Angkor.webp"
+                  alt="No reservations"
+                  className="w-full h-auto rounded-md shadow-sm object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-white backdrop-blur-sm rounded-lg shadow-lg p-8 flex flex-col md:flex-row items-center gap-6 max-w-xl w-full">
+                    <Hotel size={48} className="text-[#1c1b4d]" />
+                    <div className="flex-1 text-left">
+                      <h2 className="text-xl font-bold mb-2 text-gray-900">
+                        {displayName}, you have nothing planned right now
+                      </h2>
+                      <p className="text-gray-600 mb-4">
+                        This is the time to start to prepare your next stay.
+                      </p>
+                      <Link
+                        to="/"
+                        className="inline-block bg-[#a18a63] text-white px-6 py-2 rounded-full font-medium shadow hover:opacity-90 transition"
+                      >
+                        Book your next stay
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
+            </>
+          ) : (
+            <div className="space-y-4">
+              {filteredRoomBookings.map((booking) => (
+                <BookingCard
+                  key={booking._id}
+                  booking={booking}
+                  onCancelled={handleBookingCancelled}
+                  propertyEmail={booking.propertyEmail}
+                />
+              ))}
             </div>
           )}
         </div>
@@ -767,13 +783,29 @@ const ReservationsSection = () => {
       {activeTab === "trips" && (
         <div className="bg-white px-2 sm:px-6 py-6 rounded shadow-sm border">
           <h1 className="text-2xl font-bold mb-2">Your Booked Tours</h1>
-          {tourBookings.length === 0 ? (
+          {/* Tour filter buttons */}
+          <div className="flex gap-3 mb-4">
+            {["all", "upcoming", "active", "past"].map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setTourFilter(filter)}
+                className={`px-3 py-1 rounded-full border text-sm font-medium ${
+                  tourFilter === filter
+                    ? "border-[#A58E63] text-[#A58E63]"
+                    : "border-gray-300 text-gray-600 hover:text-[#A58E63] hover:border-[#A58E63]"
+                }`}
+              >
+                {filter === "all" ? "All" : filter.charAt(0).toUpperCase() + filter.slice(1)}
+              </button>
+            ))}
+          </div>
+          {filteredTourBookings.length === 0 ? (
             <p className="text-gray-600 mb-4">
-              {displayName}, you have no tour bookings yet.
+              {displayName}, you have no tour bookings{tourFilter !== "all" ? ` for "${tourFilter.charAt(0).toUpperCase() + tourFilter.slice(1)}"` : ""} yet.
             </p>
           ) : (
             <div className="space-y-4">
-              {tourBookings.map((tour) => (
+              {filteredTourBookings.map((tour) => (
                 <div key={tour._id} className="border p-4 rounded shadow-sm">
                   <div className="flex items-center justify-between gap-4 mb-2 flex-wrap sm:flex-nowrap">
                     <h2
@@ -810,6 +842,36 @@ const ReservationsSection = () => {
                         </span>
                       )}
                     </div>
+                  </div>
+                  {/* Status tags: Upcoming, Active, Past */}
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    {(() => {
+                      const today = new Date();
+                      const tourDate = new Date(tour.date);
+                      const isPast = tourDate < today;
+                      const isActive = tour.status === "confirmed" && tourDate.toDateString() === today.toDateString();
+                      const isUpcoming = tourDate > today;
+
+                      return (
+                        <>
+                          {isUpcoming && (
+                            <span className="inline-flex items-center gap-1 border border-blue-500 text-blue-600 px-2 py-0.5 rounded-full font-medium">
+                              Upcoming
+                            </span>
+                          )}
+                          {isActive && (
+                            <span className="inline-flex items-center gap-1 border border-green-500 text-green-600 px-2 py-0.5 rounded-full font-medium">
+                              Active
+                            </span>
+                          )}
+                          {isPast && (
+                            <span className="inline-flex items-center gap-1 border border-gray-400 text-gray-600 px-2 py-0.5 rounded-full font-medium">
+                              Past
+                            </span>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                   <p className="text-sm text-gray-600">
                     Date: {new Date(tour.date).toLocaleDateString("en-GB", {
