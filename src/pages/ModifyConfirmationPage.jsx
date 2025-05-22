@@ -247,7 +247,13 @@ const ModifyConfirmationPage = ({ propertyId: passedPropertyId }) => {
       return;
     }
     selectedRooms.forEach(room => {
-      const roomId = room.roomId;
+      const roomId = room.roomId || room._id;
+      if (!roomId) {
+        console.warn("⚠️ Missing roomId or _id for room:", room);
+        completed += 1;
+        if (completed === total) setRoomDetailsReady(true);
+        return;
+      }
       if (roomId && !roomDetailsMap[roomId]) {
         fetch(`${import.meta.env.VITE_API_BASE_URL}/api/rooms/${roomId}?propertyId=${propertyId}`)
           .then((res) => {
@@ -255,17 +261,25 @@ const ModifyConfirmationPage = ({ propertyId: passedPropertyId }) => {
             return res.json();
           })
           .then((data) => {
+            // Fallback check for data validity
+            if (!data || Object.keys(data).length === 0) {
+              console.warn("⚠️ Room data is empty or invalid for roomId:", roomId);
+              completed += 1;
+              if (completed === total) setRoomDetailsReady(true);
+              return;
+            }
+            completed += 1;
             setRoomDetailsMap(prev => {
               const updated = { ...prev, [roomId]: data };
-              completed += 1;
-              if (Object.keys(updated).length === total) {
+              console.log("✅ Room detail loaded:", roomId, updated);
+              if (completed === total) {
                 setRoomDetailsReady(true);
               }
               return updated;
             });
           })
           .catch((err) => {
-            console.error("Failed to fetch room details:", err);
+            console.error(`❌ Failed to fetch details for roomId ${roomId}:`, err);
             completed += 1;
             if (completed === total) {
               setRoomDetailsReady(true);

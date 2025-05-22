@@ -392,43 +392,17 @@ useEffect(() => {
     const exceedsCapacity = (() => {
       if (selectedRooms.length === 0) return true;
 
-      // 1 adult per room minimum
-      if (totalAdults < selectedRooms.length) return true;
+      let totalAllowedAdults = 0;
+      let totalAllowedChildren = 0;
 
-      // Check per room logic: loop through rooms and allocate guests greedily
-      let remainingAdults = totalAdults;
-      let remainingChildren = totalChildren;
-
-      const sortedRooms = [...selectedRooms].sort((a, b) => {
-        const aCap = a.capacity?.maxAdults || 0;
-        const bCap = b.capacity?.maxAdults || 0;
-        return bCap - aCap; // prioritize rooms with more adult capacity
-      });
-
-      for (const room of sortedRooms) {
-        const maxAdults = room.capacity?.maxAdults || 0;
-        const maxChildren = room.capacity?.maxChildren || 0;
-
-        // First fill adult slots
-        const useAdults = Math.min(maxAdults, remainingAdults);
-        remainingAdults -= useAdults;
-
-        // Then check if child overflow is allowed
-        const useChildren = Math.min(maxChildren, remainingChildren);
-        remainingChildren -= useChildren;
-
-        // Special fallback allowance: allow only 1 extra child if 1 or 2 adults exist
-        const totalInRoom = useAdults + useChildren;
-        if (
-          remainingChildren > 0 &&
-          ((useAdults === 1 && totalInRoom === 2) || (useAdults === 2 && totalInRoom === 2)) &&
-          totalInRoom + 1 <= maxAdults + maxChildren
-        ) {
-          remainingChildren--;
-        }
+      for (const room of selectedRooms) {
+        totalAllowedAdults += room.capacity?.maxAdults || 0;
+        totalAllowedChildren += room.capacity?.maxChildren || 0;
       }
 
-      return remainingAdults > 0 || remainingChildren > 0;
+      return (
+        totalAdults > totalAllowedAdults || totalChildren > totalAllowedChildren
+      );
     })();
 
     console.log("🧾 Debug Guest Summary", {
