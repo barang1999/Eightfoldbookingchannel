@@ -58,15 +58,18 @@ const MobileUserDropdown = ({ user, setIsModalOpen, setIsDropdownOpen }) => {
               </div>
 
               <ul className="text-sm space-y-2 font-medium text-gray-800">
-                <li className="hover:bg-gray-50 px-2 py-1 rounded-md transition-colors cursor-pointer"
+                <motion.li
+                  whileTap={{ scale: 0.96 }}
+                  className="hover:bg-gray-50 px-2 py-1 rounded-md transition-colors cursor-pointer"
                   onClick={() => {
                     navigate("/account/reservations");
                     setIsDropdownOpen(false);
                   }}
                 >
                   Your reservations
-                </li>
-                <li
+                </motion.li>
+                <motion.li
+                  whileTap={{ scale: 0.96 }}
                   className="hover:bg-gray-50 px-2 py-1 rounded-md transition-colors cursor-pointer"
                   onClick={() => {
                     navigate("/account/information");
@@ -74,8 +77,9 @@ const MobileUserDropdown = ({ user, setIsModalOpen, setIsDropdownOpen }) => {
                   }}
                 >
                   Your information
-                </li>
-                <li
+                </motion.li>
+                <motion.li
+                  whileTap={{ scale: 0.96 }}
                   className="hover:bg-gray-50 px-2 py-1 rounded-md transition-colors cursor-pointer"
                   onClick={() => {
                     navigate("/account/stay-preferences");
@@ -83,8 +87,9 @@ const MobileUserDropdown = ({ user, setIsModalOpen, setIsDropdownOpen }) => {
                   }}
                 >
                   Your stay preferences
-                </li>
-                <li
+                </motion.li>
+                <motion.li
+                  whileTap={{ scale: 0.96 }}
                   className="hover:bg-gray-50 px-2 py-1 rounded-md transition-colors cursor-pointer"
                   onClick={() => {
                     setIsModalOpen(true);
@@ -92,9 +97,15 @@ const MobileUserDropdown = ({ user, setIsModalOpen, setIsDropdownOpen }) => {
                   }}
                 >
                   Change currency
-                </li>
-                <li className="pt-2 border-t border-gray-200 hover:bg-gray-50 px-2 py-1 rounded-md transition-colors cursor-pointer">Help and support</li>
-                <li
+                </motion.li>
+                <motion.li
+                  whileTap={{ scale: 0.96 }}
+                  className="pt-2 border-t border-gray-200 hover:bg-gray-50 px-2 py-1 rounded-md transition-colors cursor-pointer"
+                >
+                  Help and support
+                </motion.li>
+                <motion.li
+                  whileTap={{ scale: 0.96 }}
                   className="hover:bg-gray-50 px-2 py-1 rounded-md transition-colors cursor-pointer"
                   onClick={() => {
                     const auth = getAuth();
@@ -109,7 +120,7 @@ const MobileUserDropdown = ({ user, setIsModalOpen, setIsDropdownOpen }) => {
                   }}
                 >
                   Logout
-                </li>
+                </motion.li>
               </ul>
             </>
           ) : (
