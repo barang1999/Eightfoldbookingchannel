@@ -87,7 +87,6 @@ export async function refreshSelectedRooms(selectedRooms, stayPeriod, breakfastI
 }
 
 export async function refreshAllRoomRates(allRooms, stayPeriod, breakfastIncluded) {
-  console.log("🍳 [refreshAllRoomRates] breakfastIncluded:", breakfastIncluded);
 
   const start = new Date(stayPeriod.startDate);
   const end = new Date(stayPeriod.endDate);
@@ -120,8 +119,6 @@ export async function refreshAllRoomRates(allRooms, stayPeriod, breakfastInclude
         try {
           const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/rates/search?${params.toString()}`);
           updatedData = await response.json();
-
-         
         } catch (fetchError) {
           console.error("❌ Fetch error for room:", room.roomType || room.name, fetchError);
           return { ...room, price: 0, unavailable: true, breakfastIncluded: breakfastIncluded, promotionBookableStartDate: null, promotionBookableEndDate: null };
@@ -136,7 +133,9 @@ export async function refreshAllRoomRates(allRooms, stayPeriod, breakfastInclude
           propertyId: room.propertyId,
           nights: nights,
           breakfastIncluded: breakfastIncluded,
-          unavailable: updatedData?.availability === false,
+          unavailable: updatedData?.availability === false || updatedData?.roomsToSell === 0,
+          availability: updatedData?.availability ?? true,
+          roomsToSell: updatedData?.roomsToSell ?? 0,
           quantity: qty,
         };
 

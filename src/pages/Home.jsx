@@ -392,20 +392,28 @@ const HomeContent = () => {
                   const aSoldOut = a.unavailable ? 1 : 0;
                   const bSoldOut = b.unavailable ? 1 : 0;
                   return aSoldOut - bSoldOut;
-                }).map((room, idx) => (
-                  <div key={idx} className="mb-6">
-                    <RoomCard
-                      room={room}
-                      propertyId={property._id}
-                      startDate={new Date(dateRange.startDate)}
-                      endDate={new Date(dateRange.endDate)}
-                      breakfastIncluded={breakfastIncluded}
-                      onAddRoom={() => {}}
-                      nights={nights}
-                      loadingRate={loading}
-                    />
-                  </div>
-                ))
+                }).map((room, idx) => {
+                  const fallbackRoom = {
+                    ...room,
+                    roomsToSell: room.roomsToSell ?? 0,
+                    availability: room.availability ?? false,
+                    unavailable: room.unavailable ?? (room.roomsToSell === 0 || room.availability === false)
+                  };
+                  return (
+                    <div key={idx} className="mb-6">
+                      <RoomCard
+                        room={fallbackRoom}
+                        propertyId={property._id}
+                        startDate={new Date(dateRange.startDate)}
+                        endDate={new Date(dateRange.endDate)}
+                        breakfastIncluded={breakfastIncluded}
+                        onAddRoom={() => {}}
+                        nights={nights}
+                        loadingRate={loading}
+                      />
+                    </div>
+                  );
+                })
               ) : (
                 <div className="text-center text-gray-500">No rooms available.</div>
               )}

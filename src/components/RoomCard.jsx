@@ -22,6 +22,7 @@ import { BedDouble, Users } from "lucide-react";
 import RoomDetailModal from "./RoomDetailModal";
 
 const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate }) => {
+  const isSoldOut = room?.unavailable || room?.availability === false || room?.roomsToSell === 0;
   const includeBreakfast = breakfastIncluded;
   // promoPrice, basePrice, isPromoBookable are defined below, so we add a dummy log here and another after they're declared
   
@@ -63,10 +64,14 @@ const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate 
   const displayPrice = hasPromotion ? promoPrice : basePrice;
   
   const { dateRange } = useSelectedDate();
-  const { addRoom } = useSelectedRooms();
+  const { addRoom, selectedRooms } = useSelectedRooms();
   const { currency, exchangeRate } = useCurrency();
   const { t } = useTranslation();
 
+  const selectedCount = selectedRooms.filter(
+    (r) => r.roomId === room._id || r.id === room._id
+  ).length;
+  const atLimit = selectedCount >= (room.roomsToSell || 1);
 
   useEffect(() => {
     const savedLang = localStorage.getItem("language");
@@ -118,7 +123,7 @@ const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate 
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
         transition={{ duration: 0.3 }}
-        className={`bg-white p-4 md:p-5 rounded-xl border border-gray-200 shadow-sm transition grid grid-cols-1 md:grid-cols-5 gap-4 ${room?.unavailable ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'}`}
+        className={`bg-white p-4 md:p-5 rounded-xl border border-gray-200 shadow-sm transition grid grid-cols-1 md:grid-cols-5 gap-4 ${isSoldOut ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'}`}
       >
         {/* Left: Image */}
         <div className="md:col-span-2 rounded-xl overflow-hidden">
@@ -133,7 +138,7 @@ const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate 
                 -{discountPercent}%
               </div>
             )}
-            {room?.unavailable && (
+            {isSoldOut && (
               <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded shadow-md rotate-[-10deg]">
                 Sold Out
               </div>
@@ -203,6 +208,12 @@ const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate 
               })}
             </div>
 
+            {room.roomsToSell <= 5 && room.roomsToSell > 0 && (
+              <div className="text-xs text-red-600 font-medium mt-1">
+                Only {room.roomsToSell} room{room.roomsToSell > 1 ? "s" : ""} left
+              </div>
+            )}
+
             <button
               onClick={() => setOpen(true)}
               className="inline-block mt-4 text-sm text-grey-700 font-medium underline underline-offset-2 hover:text-blue-900"
@@ -254,12 +265,20 @@ const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate 
             <div className="flex items-center gap-2 mb-2">
               <span className="text-sm font-medium">{t("actions.rooms", { defaultValue: "Rooms:" })}</span>
               <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-2 py-1 text-gray-700 hover:text-primary">−</button>
+              <button
+                onClick={() => setQuantity(prev => Math.min(prev + 1, (room.roomsToSell || 1) - selectedCount))}
+                disabled={quantity + selectedCount >= (room.roomsToSell || 1)}
+                className={`px-2 py-1 text-gray-700 hover:text-primary ${
+                  quantity + selectedCount >= (room.roomsToSell || 1) ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                +
+              </button>
               <span className="text-sm">{quantity}</span>
-              <button onClick={() => setQuantity(quantity + 1)} className="px-2 py-1 text-gray-700 hover:text-primary">+</button>
             </div>
             <button
               onClick={() => {
-                if (!room?.unavailable) {
+                if (!isSoldOut) {
                   const selectedRoomData = {
                     id: room._id,
                     roomId: room._id,
@@ -288,14 +307,16 @@ const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate 
                   }
                 }
               }}
-              disabled={room?.unavailable}
+              disabled={isSoldOut || atLimit}
               className={`px-4 py-2 w-fit self-end rounded-full text-sm transition ${
-                room?.unavailable
+                isSoldOut || atLimit
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                   : "bg-primary text-white hover:opacity-90"
               }`}
             >
-              {room?.unavailable ? t("actions.soldOut", { defaultValue: "Sold Out" }) : t("actions.chooseRoom", { defaultValue: "Choose this room" })}
+              {isSoldOut || atLimit
+                ? t("actions.soldOut", { defaultValue: "Sold Out" })
+                : t("actions.chooseRoom", { defaultValue: "Choose this room" })}
             </button>
           </div>
         </div>
