@@ -29,6 +29,7 @@ import HotelPolicyModal from "../../components/HotelPolicyModal";
 import MapModal from "../../components/MapModal";
 import CancelReservationModal from "../../components/CancelReservationModal";
 import SupportButton from "../../components/SupportButton";
+import TourDetailModal from "../../components/TourDetailModal";
 
 const BookingCard = ({ booking, onCancelled, propertyEmail }) => {
   const navigate = useNavigate();
@@ -576,9 +577,14 @@ const ReservationsSection = () => {
     user?.displayName?.split(" ")[0] ||
     (user?.email?.charAt(0).toUpperCase()) ||
     "Guest";
+  // "stays" for room bookings, "trips" for tour bookings, "activities" for other
   const [activeTab, setActiveTab] = useState("stays");
   const [bookings, setBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [tourBookings, setTourBookings] = useState([]);
+  // Modal state for TourDetailModal
+  const [selectedTour, setSelectedTour] = useState(null);
+  const [isTourModalOpen, setIsTourModalOpen] = useState(false);
 
   const fetchBookings = useCallback(async () => {
     if (!user?.uid) return;
@@ -590,10 +596,23 @@ const ReservationsSection = () => {
     }
   }, [user?.uid]);
 
+  const fetchTourBookings = useCallback(async () => {
+    if (!user?.uid) return;
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/tour-booking`, {
+        params: { userUid: user.uid }
+      });
+      setTourBookings(response.data);
+    } catch (err) {
+      console.error("Failed to fetch tour bookings:", err);
+    }
+  }, [user?.uid]);
+
   useEffect(() => {
     setIsLoading(true);
     fetchBookings().finally(() => setIsLoading(false));
-  }, [fetchBookings]);
+    fetchTourBookings();
+  }, [fetchBookings, fetchTourBookings]);
 
   const now = new Date();
   const upcomingBookings = bookings
@@ -630,11 +649,31 @@ const ReservationsSection = () => {
   }
 
   return (
-    <div className="mx-0 px-0 sm:mx-0 sm:px-0">
+    <div className="pt-6 sm:pt-0 mx-0 px-0 sm:mx-0 sm:px-0">
       {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         ...tab grid removed...
       </div> */}
       <div className="hidden" />
+
+      <div className="flex justify-center sm:justify-start gap-6 border-b border-gray-200 px-4 sm:px-6 mb-6">
+        {[
+          { label: "Room Bookings", key: "stays" },
+          { label: "Tour & Experience", key: "trips" },
+          // { label: "Restaurant", key: "restaurant" }
+        ].map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`pb-2 text-sm font-medium border-b-2 transition-colors duration-200 ${
+              activeTab === tab.key
+                ? "border-[#A58E63] text-[#A58E63]"
+                : "border-transparent text-gray-500 hover:text-[#A58E63]"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
       {activeTab === "stays" && (
         <div className="bg-white px-2 sm:px-6 py-6 rounded shadow-sm border">
@@ -712,21 +751,83 @@ const ReservationsSection = () => {
 
       {activeTab === "trips" && (
         <div className="bg-white px-2 sm:px-6 py-6 rounded shadow-sm border">
-          <h1 className="text-2xl font-bold mb-2">Upcoming Trips</h1>
-          <p className="text-gray-600">
-            {displayName}, you have no trips planned at the moment.
-          </p>
+          <h1 className="text-2xl font-bold mb-2">Your Booked Tours</h1>
+          {tourBookings.length === 0 ? (
+            <p className="text-gray-600 mb-4">
+              {displayName}, you have no tour bookings yet.
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {tourBookings.map((tour) => (
+                <div key={tour._id} className="border p-4 rounded shadow-sm">
+                  <h2
+                    onClick={async () => {
+                      try {
+                        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/services/${tour.tourId}`);
+                        setSelectedTour({
+                          ...res.data,
+                          transportType: tour.transportType,
+                          time: tour.time,
+                          date: tour.date,
+                          subtotal: tour.subtotal,
+                          total: tour.total,
+                          specialRequest: tour.specialRequest,
+                        });
+                        setIsTourModalOpen(true);
+                      } catch (err) {
+                        console.error("❌ Failed to fetch full tour data:", err);
+                      }
+                    }}
+                    className="font-semibold text-lg text-theme cursor-pointer hover:underline"
+                  >
+                    {tour.tourType}
+                  </h2>
+                  <p className="text-sm text-gray-600">
+                    Date: {new Date(tour.date).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric"
+                    })}
+                  </p>
+                  <p className="text-sm">
+                    Time: {new Date(`1970-01-01T${tour.time}`).toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true
+                    })}
+                  </p>
+                  <p className="text-sm">
+                    Transportation:{" "}
+                    {tour.transportType === "tukTuk1to2" && "Tuk-Tuk (1–2 pax)"}
+                    {tour.transportType === "tukTuk3to4" && "Tuk-Tuk (3–4 pax)"}
+                    {tour.transportType === "car" && "Car (1–4 pax)"}
+                    {tour.transportType === "van" && "Van (5–8 pax)"}
+                    {!["tukTuk1to2", "tukTuk3to4", "car", "van"].includes(tour.transportType) && tour.transportType}
+                  </p>
+                  <p className="text-sm">Total: ${tour.total.toFixed(2)}</p>
+                  {tour.specialRequest && <p className="text-sm">Note: {tour.specialRequest}</p>}
+                </div>
+              ))}
+            </div>
+          )}
+          {isTourModalOpen && selectedTour && (
+            <TourDetailModal
+              isOpen={isTourModalOpen}
+              onClose={() => setIsTourModalOpen(false)}
+              tour={selectedTour}
+            />
+          )}
         </div>
       )}
 
-      {activeTab === "activities" && (
+      {/* {activeTab === "restaurant" && (
         <div className="bg-white px-2 sm:px-6 py-6 rounded shadow-sm border">
-          <h1 className="text-2xl font-bold mb-2">Upcoming Activities</h1>
+          <h1 className="text-2xl font-bold mb-2">Restaurant Bookings</h1>
           <p className="text-gray-600">
-            {displayName}, you have no activities planned at the moment.
+            {displayName}, you have no restaurant reservations at the moment.
           </p>
         </div>
-      )}
+      )} */}
       {/* Sticky Help & Support button */}
       <div className="fixed bottom-6 right-0 z-50">
         <SupportButton />
