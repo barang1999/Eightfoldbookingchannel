@@ -284,7 +284,11 @@ const MobilePriceSummary = ({
               </div>
               <div>
                 {formatCurrency(
-                  safeSelectedRooms.reduce((sum, r) => sum + (r.price || 0), 0),
+                  safeSelectedRooms.reduce((sum, r) => {
+                    const price = r.price || 0;
+                    const vat = price * (10 / 110);
+                    return sum + (price - vat);
+                  }, 0),
                   exchangeRate,
                   currencyCode
                 )}
