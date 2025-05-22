@@ -40,22 +40,23 @@ export const AuthProvider = ({ children }) => {
           const fetchUserProfile = async () => {
             try {
               const profileRef = doc(db, "users", currentUser.uid, "profile", "identity");
-              const docSnap = await getDoc(profileRef);
-              if (docSnap.exists()) {
-                const profileData = docSnap.data();
-                console.log("Fetched profile data:", profileData);
-                const userWithProfile = {
-                  ...currentUser,
-                  profile: profileData,
-                  fullName: profileData.fullName || null,
-                };
-                console.log("User with profile in AuthContext:", userWithProfile);
-                setUser(userWithProfile);
-                localStorage.setItem("authUser", JSON.stringify(userWithProfile));
-              } else {
-                setUser(currentUser);
-                localStorage.setItem("authUser", JSON.stringify(currentUser));
-              }
+              const prefsRef = doc(db, "users", currentUser.uid, "stayPreferences", "preferences");
+              const [profileSnap, prefsSnap] = await Promise.all([getDoc(profileRef), getDoc(prefsRef)]);
+
+              const profileData = profileSnap.exists() ? profileSnap.data() : {};
+              const stayPreferences = prefsSnap.exists() ? prefsSnap.data() : {};
+
+              const userWithProfile = {
+                ...currentUser,
+                profile: {
+                  ...profileData,
+                  stayPreferences,
+                },
+                fullName: profileData.fullName || null,
+              };
+              console.log("User with profile in AuthContext:", userWithProfile);
+              setUser(userWithProfile);
+              localStorage.setItem("authUser", JSON.stringify(userWithProfile));
             } catch (error) {
               console.error("Error fetching user profile:", error);
               setUser(currentUser);

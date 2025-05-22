@@ -14,6 +14,7 @@ import { useSelectedDate } from "../contexts/SelectedDateContext";
 import { getSelectedRooms } from "../utils/localStorageManager";
 import Breadcrumbs from '../components/Breadcrumbs';
 import { getAuth } from "firebase/auth";
+import { useAuth } from "../contexts/AuthContext";
 import {
   Hotel,
   Calendar,
@@ -54,6 +55,7 @@ const SkeletonBlock = ({ className }) => (
 );
 
 const PaymentConfirmationPage = ({ propertyId: passedPropertyId }) => {
+  const { user } = useAuth();
   const propertyId = passedPropertyId || fallbackPropertyId;
   const navigate = useNavigate();
   useEffect(() => {
@@ -130,6 +132,9 @@ const PaymentConfirmationPage = ({ propertyId: passedPropertyId }) => {
     const currentUser = auth.currentUser;
     const firebaseUid = currentUser?.uid || null;
 
+    // Fetch stay preferences from user profile if available
+    const stayPreferences = user?.profile?.stayPreferences || {};
+
     const bookingData = {
       propertyId,
       fullName: guestInfo.fullName || `${guestInfo.firstName || ""} ${guestInfo.lastName || ""}`.trim(),
@@ -204,8 +209,10 @@ const PaymentConfirmationPage = ({ propertyId: passedPropertyId }) => {
         };
       }),
       firebaseUid,
+      stayPreferences,
     };
     console.log("[🧾 bookingData.rooms]", bookingData.rooms);
+    console.log("[🧾 Full bookingData payload]", bookingData);
 
     try {
       const response = await fetch(`${import.meta.env.VITE_BOOKING_API_URL}/create`, {
