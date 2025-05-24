@@ -740,7 +740,7 @@ const ReservationsSection = () => {
               <p className="text-gray-600 mb-6">{displayName}, you have no reservations planned at the moment.</p>
               <div className="relative w-full max-w-4xl mx-auto mt-10">
                 <img
-                  src="/public/Angkor.webp"
+                  src="/Angkor.webp"
                   alt="No reservations"
                   className="w-full h-auto rounded-md shadow-sm object-cover"
                 />
