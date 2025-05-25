@@ -20,21 +20,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await signInWithEmail(email, password);
-      const fallbackPath = '/';
-      const redirectTo = localStorage.getItem('lastVisitedPath');
-      const validRedirect =
-        redirectTo &&
-        redirectTo !== '/login' &&
-        redirectTo !== '/register' &&
-        redirectTo !== window.location.pathname;
-
-      if (validRedirect) {
-        console.log('Redirecting to last valid path:', redirectTo);
-        navigate(redirectTo, { replace: true });
-      } else {
-        console.log('No valid redirect path. Redirecting to fallback:', fallbackPath);
-        navigate(fallbackPath, { replace: true });
-      }
+      navigate('/', { replace: true });
       return;
     } catch (err) {
       setError(err.message);
@@ -104,9 +90,8 @@ export default function LoginPage() {
               onClick={async () => {
                 try {
                   const provider = new GoogleAuthProvider();
-                  const result = await signInWithPopup(auth, provider);
-                  const token = await result.user.getIdToken();
-                  window.location.href = `https://eightfoldbookingchannel.vercel.app/token-login?token=${token}&redirectBack=https://eightfoldurbanresort.vercel.app/`;
+                  await signInWithPopup(auth, provider);
+                  navigate('/');
                 } catch (err) {
                   console.error("Google login failed:", err);
                 }

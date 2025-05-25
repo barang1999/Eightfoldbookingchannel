@@ -20,17 +20,40 @@ export default function RegisterPage() {
       const userCredential = await signUpWithEmail(email, password);
       const user = userCredential.user;
 
-      // Save user to Firestore
-      await setDoc(doc(db, "users", user.uid), {
+      const propertyId = localStorage.getItem('propertyId');
+      console.log('[Debug] propertyId from localStorage:', propertyId);
+
+      const firestorePayload = {
         email: user.email,
+        propertyId,
         createdAt: new Date().toISOString(),
+      };
+      console.log('[Debug] Saving to Firestore:', firestorePayload);
+
+      // ✅ Save to Firestore
+      await setDoc(doc(db, "users", user.uid), firestorePayload);
+
+      const mongoPayload = {
+        userUid: user.uid,
+        email: user.email,
+        propertyId,
+      };
+      console.log('[Debug] Syncing to MongoDB:', mongoPayload);
+
+      const mongoResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/user/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(mongoPayload),
       });
+
+      const mongoResult = await mongoResponse.json();
+      console.log('[Debug] MongoDB response:', mongoResult);
+
       console.log('Registered successfully, navigating...');
-      setTimeout(() => {
-        navigate('/login');
-      }, 0);
+      navigate('/login');
     } catch (err) {
       setError(err.message);
+      console.error('[Register Error]', err);
     } finally {
       setLoading(false);
     }
