@@ -75,7 +75,11 @@ export default function RegisterPage() {
       console.log('Registered successfully, navigating...');
       navigate('/login');
     } catch (err) {
-      setError(err.message);
+      if (err.code === 'auth/email-already-in-use') {
+        setError("This email is already registered. Please log in instead.");
+      } else {
+        setError("Registration failed. Please try again.");
+      }
       console.error('[Register Error]', err);
     } finally {
       setLoading(false);
