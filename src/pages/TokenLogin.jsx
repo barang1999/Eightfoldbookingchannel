@@ -41,7 +41,7 @@ export default function TokenLogin() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-800 mx-auto mb-4"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#A58E63] mx-auto mb-4"></div>
         <p className="text-gray-700 text-lg font-medium">Logging you in, please wait...</p>
       </div>
     </div>
