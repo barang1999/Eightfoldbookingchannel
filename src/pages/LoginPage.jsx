@@ -14,6 +14,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const from = localStorage.getItem('lastVisitedPath') || '/';
 
 
   const handleLogin = async () => {
@@ -21,7 +22,8 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await signInWithEmail(email, password);
-      navigate('/', { replace: true });
+      navigate(from, { replace: true });
+      localStorage.removeItem('lastVisitedPath');
       return;
     } catch (err) {
       setError(err.message);
@@ -102,7 +104,8 @@ export default function LoginPage() {
                 try {
                   const provider = new GoogleAuthProvider();
                   await signInWithPopup(auth, provider);
-                  navigate('/');
+                  navigate(from, { replace: true });
+                  localStorage.removeItem('lastVisitedPath');
                 } catch (err) {
                   console.error("Google login failed:", err);
                 }
