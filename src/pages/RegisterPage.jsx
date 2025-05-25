@@ -33,22 +33,43 @@ export default function RegisterPage() {
       // ✅ Save to Firestore
       await setDoc(doc(db, "users", user.uid), firestorePayload);
 
+      // --- Backend sync to /api/user/register (MongoDB) ---
       const mongoPayload = {
         userUid: user.uid,
         email: user.email,
         propertyId,
+        profile: {
+          identity: {
+            fullName: '',
+            title: '',
+            dob: '',
+            nationality: '',
+            placeOfBirth: '',
+          },
+          contact: {
+            phone: '',
+            address: '',
+            countryCode: '',
+          },
+          business: {
+            businessEmail: '',
+            businessPhone: '',
+            billingAddress: '',
+            businessAddress: '',
+            countryCode: '',
+          }
+        }
       };
-      console.log('[Debug] Syncing to MongoDB:', mongoPayload);
 
       const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:7071';
-      const mongoResponse = await fetch(`${apiBaseUrl}/api/user/register`, {
+      const response = await fetch(`${apiBaseUrl}/api/user/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(mongoPayload),
       });
 
-      const mongoResult = await mongoResponse.json();
-      console.log('[Debug] MongoDB response:', mongoResult);
+      const resultData = await response.json();
+      console.log('[Email Register Sync] MongoDB response:', resultData);
 
       console.log('Registered successfully, navigating...');
       navigate('/login');
@@ -124,6 +145,27 @@ export default function RegisterPage() {
                       userUid: user.uid,
                       email: user.email,
                       propertyId,
+                      profile: {
+                        identity: {
+                          fullName: user.displayName || '',
+                          title: '',
+                          dob: '',
+                          nationality: '',
+                          placeOfBirth: '',
+                        },
+                        contact: {
+                          phone: user.phoneNumber || '',
+                          address: '',
+                          countryCode: '',
+                        },
+                        business: {
+                          businessEmail: '',
+                          businessPhone: '',
+                          billingAddress: '',
+                          businessAddress: '',
+                          countryCode: '',
+                        }
+                      }
                     };
 
                     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:7071';
