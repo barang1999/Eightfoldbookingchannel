@@ -75,6 +75,25 @@ const StayPreferencesSection = () => {
       const docRef = doc(db, "users", userId, "stayPreferences", "preferences");
       await setDoc(docRef, payload, { merge: true }); // Use merge to avoid overwriting
       console.log("Preferences saved successfully"); // Debug log after setDoc
+
+      // ✅ Also sync to MongoDB
+      const propertyId = localStorage.getItem('propertyId');
+      const mongoPayload = {
+        userUid: userId,
+        propertyId,
+        stayPreferences: payload,
+      };
+      console.log('[Debug] Syncing stay preferences to MongoDB:', mongoPayload);
+
+      const mongoResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/user/update-preferences`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(mongoPayload),
+      });
+
+      const mongoResult = await mongoResponse.json();
+      console.log('[Debug] MongoDB response:', mongoResult);
+
       setIsSaving(false);
       setIsSaved(true);
     } catch (error) {

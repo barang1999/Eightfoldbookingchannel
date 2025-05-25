@@ -19,6 +19,7 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 const facebookProvider = new FacebookAuthProvider();
 
 export const AuthProvider = ({ children }) => {

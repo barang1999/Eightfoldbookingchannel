@@ -42,7 +42,6 @@ const nationalities = [
 
 const EditIdentityModal = ({ isOpen, onClose, onSave, identityInfo }) => {
   const modalRef = useRef();
-  useClickOutside(modalRef, onClose);
   const [selectedNationality, setSelectedNationality] = useState('');
   const [query, setQuery] = useState('');
   const [dobDay, setDobDay] = useState("");
@@ -137,6 +136,28 @@ const EditIdentityModal = ({ isOpen, onClose, onSave, identityInfo }) => {
               const uid = auth.currentUser?.uid;
               if (uid) {
                 await setDoc(doc(db, "users", uid, "profile", "identity"), identityData);
+
+                // --- Sync with backend MongoDB
+                const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:7071';
+                const propertyId = localStorage.getItem('propertyId');
+                console.log('[Debug] Syncing identity info to MongoDB:', {
+                  userUid: uid,
+                  propertyId,
+                  profile: { identity: identityData }
+                });
+                const response = await fetch(`${apiBaseUrl}/api/user/update-profile`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    userUid: uid,
+                    propertyId,
+                    profile: {
+                      identity: identityData
+                    }
+                  }),
+                });
+                const responseData = await response.json();
+                console.log('[Debug] MongoDB response:', responseData);
               }
               setIsSaving(false);
               onSave(identityData);

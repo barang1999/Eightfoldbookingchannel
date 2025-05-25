@@ -40,7 +40,8 @@ export default function RegisterPage() {
       };
       console.log('[Debug] Syncing to MongoDB:', mongoPayload);
 
-      const mongoResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/user/register`, {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:7071';
+      const mongoResponse = await fetch(`${apiBaseUrl}/api/user/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(mongoPayload),
@@ -116,6 +117,25 @@ export default function RegisterPage() {
                 try {
                   const result = await signInWithGoogle();
                   if (result?.user) {
+                    const user = result.user;
+                    const propertyId = localStorage.getItem('propertyId');
+
+                    const mongoPayload = {
+                      userUid: user.uid,
+                      email: user.email,
+                      propertyId,
+                    };
+
+                    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:7071';
+                    const response = await fetch(`${apiBaseUrl}/api/user/register`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(mongoPayload),
+                    });
+
+                    const resultData = await response.json();
+                    console.log('[Google Register Sync] MongoDB response:', resultData);
+
                     navigate('/login');
                   }
                 } catch (err) {

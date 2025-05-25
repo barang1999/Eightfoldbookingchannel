@@ -85,9 +85,30 @@ const EditBusinessModal = ({ isOpen, onClose, onSave, businessInfo }) => {
               const db = getFirestore();
               const auth = getAuth();
               const uid = auth.currentUser?.uid;
+              const propertyId = localStorage.getItem('propertyId');
               if (uid) {
                 await setDoc(doc(db, "users", uid, "profile", "business"), businessData);
                 console.log("Business data saved to Firebase:", businessData);
+
+                const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:7071';
+                console.log('[Debug] Syncing business info to MongoDB:', {
+                  userUid: uid,
+                  propertyId,
+                  profile: { business: businessData }
+                });
+                const response = await fetch(`${apiBaseUrl}/api/user/update-profile`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    userUid: uid,
+                    propertyId,
+                    profile: {
+                      business: businessData
+                    }
+                  }),
+                });
+                const responseData = await response.json();
+                console.log('[Debug] MongoDB response:', responseData);
               }
               setLoading(false);
               onSave(businessData);

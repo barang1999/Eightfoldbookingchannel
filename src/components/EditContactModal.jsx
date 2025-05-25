@@ -310,9 +310,30 @@ const EditContactModal = ({ isOpen, onClose, onSave, user, contactInfo }) => {
               const db = getFirestore();
               const auth = getAuth();
               const uid = auth.currentUser?.uid;
+              const propertyId = localStorage.getItem('propertyId');
               if (uid) {
                 await setDoc(doc(db, "users", uid, "profile", "contact"), contactData);
                 console.log("Contact data saved to Firebase:", contactData);
+
+                const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:7071';
+                console.log('[Debug] Syncing contact info to MongoDB:', {
+                  userUid: uid,
+                  propertyId,
+                  profile: { contact: contactData }
+                });
+                const response = await fetch(`${apiBaseUrl}/api/user/update-profile`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    userUid: uid,
+                    propertyId,
+                    profile: {
+                      contact: contactData
+                    }
+                  }),
+                });
+                const responseData = await response.json();
+                console.log('[Debug] MongoDB response:', responseData);
               }
               onSave(contactData);
               setIsSaving(false);

@@ -120,6 +120,9 @@ const UserAccount = () => {
         user={user}
         identityInfo={identityInfo}
         initialData={identityInfo}
+        closeOnOverlayClick={false}
+        closeOnEsc={false}
+        shouldCloseOnOverlayClick={false}
       />
 
       <EditContactModal
@@ -131,6 +134,9 @@ const UserAccount = () => {
         }}
         user={user}
         contactInfo={contactInfo}
+        closeOnOverlayClick={false}
+        closeOnEsc={false}
+        shouldCloseOnOverlayClick={false}
       />
       <div className="fixed bottom-6 right-0 z-50">
         <SupportButton />
