@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -59,13 +60,23 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
             />
 
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full mb-4 p-2 border border-gray-300 rounded"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                className="w-full mb-4 p-2 border border-gray-300 rounded pr-10"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 px-3 flex items-center text-sm text-gray-500 focus:outline-none"
+                tabIndex={-1}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
             <div className="text-right mb-4">
               <a href="/forgot-password" className="text-blue-600 hover:underline text-sm">
                 Forgot password?
