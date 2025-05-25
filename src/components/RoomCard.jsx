@@ -127,11 +127,11 @@ const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate 
       >
         {/* Left: Image */}
         <div className="md:col-span-2 rounded-xl overflow-hidden">
-          <div className="relative">
+          <div onClick={() => setOpen(true)} className="relative cursor-pointer overflow-hidden group rounded-xl">
             <img
               src={room.images?.[0] || "/default-room.jpg"}
               alt={room.roomType}
-              className="w-full h-56 object-cover rounded-xl"
+              className="w-full h-56 object-cover rounded-xl transition-transform duration-300 ease-in-out group-hover:scale-105"
             />
             {hasPromotion && originalPublicRate > promoPrice && (
               <div className="absolute top-2 right-2 bg-yellow-400 text-black text-[11px] font-semibold px-2 py-1 rounded shadow-md">

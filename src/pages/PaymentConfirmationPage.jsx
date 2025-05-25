@@ -225,6 +225,9 @@ const PaymentConfirmationPage = ({ propertyId: passedPropertyId }) => {
 
       const result = await response.json();
       if (result.success) {
+        // Clear selected room-related localStorage on successful booking
+        localStorage.removeItem("selectedRooms");
+        localStorage.removeItem("selectedRoomsTimestamp");
         navigate(`/booking-success/${result.booking._id}`, { replace: true });
       } else {
         alert("Booking failed: " + result.message);

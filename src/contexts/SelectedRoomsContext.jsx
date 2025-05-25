@@ -7,18 +7,31 @@ const SelectedRoomsContext = createContext();
 export const SelectedRoomsProvider = ({ children }) => {
   const [selectedRooms, setSelectedRooms] = useState(() => {
     const stored = localStorage.getItem("selectedRooms");
-    return stored ? JSON.parse(stored) : [];
+    const timestamp = localStorage.getItem("selectedRoomsTimestamp");
+    const now = Date.now();
+    if (stored && timestamp && now - parseInt(timestamp, 10) < 3600000) {
+      return JSON.parse(stored);
+    }
+    localStorage.removeItem("selectedRooms");
+    localStorage.removeItem("selectedRoomsTimestamp");
+    return [];
   });
+
+  const updateStorageTimestamp = () => {
+    localStorage.setItem('selectedRoomsTimestamp', Date.now().toString());
+  };
 
   // Save to localStorage whenever selectedRooms changes
   useEffect(() => {
     localStorage.setItem('selectedRooms', JSON.stringify(selectedRooms));
+    localStorage.setItem('selectedRoomsTimestamp', Date.now().toString());
   }, [selectedRooms]);
 
   const addRoom = (room) => {
     const instanceId = `${room._id || room.id || 'room'}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
     const requiresBedChoice = Array.isArray(room.bedTypes) && room.bedTypes.length > 1;
     setSelectedRooms(prev => [...prev, { ...room, instanceId, requiresBedChoice }]);
+    updateStorageTimestamp();
   };
 
   const removeRoom = (roomId) => {
@@ -29,10 +42,12 @@ export const SelectedRoomsProvider = ({ children }) => {
       console.log("🧹 Remaining rooms after filter:", filtered.map(r => r.instanceId || r._id));
       return filtered;
     });
+    updateStorageTimestamp();
   };
 
   const clearRooms = () => {
     setSelectedRooms([]);
+    updateStorageTimestamp();
   };
 
   const updateRoomsAfterRateRefresh = (updatedRooms) => {

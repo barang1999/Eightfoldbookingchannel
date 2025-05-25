@@ -736,9 +736,9 @@ const ReservationsSection = () => {
           </div>
           {filteredRoomBookings.length === 0 ? (
             <>
-              <h1 className="text-2xl font-bold mb-2">Your Upcoming Stay</h1>
-              <p className="text-gray-600 mb-6">{displayName}, you have no reservations planned at the moment.</p>
-              <div className="relative w-full max-w-4xl mx-auto mt-10">
+              {/* <h1 className="text-2xl font-bold mb-2">Your Upcoming Stay</h1>
+              <p className="text-gray-600 mb-6">{displayName}, you have no reservations planned at the moment.</p> */}
+              <div className="relative w-full max-w-4xl mx-auto mt-20">
                 <img
                   src="/Angkor.webp"
                   alt="No reservations"
@@ -782,7 +782,7 @@ const ReservationsSection = () => {
 
       {activeTab === "trips" && (
         <div className="bg-white px-2 sm:px-6 py-6 rounded shadow-sm border">
-          <h1 className="text-2xl font-bold mb-2">Your Booked Tours</h1>
+         
           {/* Tour filter buttons */}
           <div className="flex gap-3 mb-4">
             {["all", "upcoming", "active", "past"].map((filter) => (
@@ -800,9 +800,36 @@ const ReservationsSection = () => {
             ))}
           </div>
           {filteredTourBookings.length === 0 ? (
-            <p className="text-gray-600 mb-4">
-              {displayName}, you have no tour bookings{tourFilter !== "all" ? ` for "${tourFilter.charAt(0).toUpperCase() + tourFilter.slice(1)}"` : ""} yet.
-            </p>
+             <>
+              {/* <h1 className="text-2xl font-bold mb-2">Your Upcoming Stay</h1>
+              <p className="text-gray-600 mb-6">{displayName}, you have no reservations planned at the moment.</p> */}
+              <div className="relative w-full max-w-4xl mx-auto mt-20">
+                <img
+                  src="/Angkor.webp"
+                  alt="No reservations"
+                  className="w-full h-auto rounded-md shadow-sm object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-white backdrop-blur-sm rounded-lg shadow-lg p-8 flex flex-col md:flex-row items-center gap-6 max-w-xl w-full">
+                    <Mountain size={48} className="text-[#1c1b4d]" />
+                    <div className="flex-1 text-left">
+                      <h2 className="text-xl font-bold mb-2 text-gray-900">
+                        {displayName}, you have nothing planned right now
+                      </h2>
+                      <p className="text-gray-600 mb-4">
+                        This is the time to start to prepare your next experience.
+                      </p>
+                      <Link
+                        to="https://eightfoldurbanresort.vercel.app/tours"
+                        className="inline-block bg-[#a18a63] text-white px-6 py-2 rounded-full font-medium shadow hover:opacity-90 transition"
+                      >
+                        Book your next tour
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
           ) : (
             <div className="space-y-4">
               {filteredTourBookings.map((tour) => (
