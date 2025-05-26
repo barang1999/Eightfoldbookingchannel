@@ -22,7 +22,14 @@ import { BedDouble, Users } from "lucide-react";
 import RoomDetailModal from "./RoomDetailModal";
 
 const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate }) => {
-  const isSoldOut = room?.unavailable || room?.availability === false || room?.roomsToSell === 0;
+  const isOverbooked = room?.netBooked > (room?.roomsToSell ?? 0);
+  const isSoldOut = room?.unavailable || room?.availability === false || room?.roomsToSell === 0 || isOverbooked;
+  // Debugging: inspect overbooked/sold out logic
+  console.log("🛏️ Room:", room?.roomType);
+  console.log("Rooms to Sell:", room?.roomsToSell);
+  console.log("Net Booked:", room?.netBooked);
+  console.log("Is Overbooked?", isOverbooked);
+  console.log("Is Sold Out?", isSoldOut);
   const includeBreakfast = breakfastIncluded;
   // promoPrice, basePrice, isPromoBookable are defined below, so we add a dummy log here and another after they're declared
   

@@ -389,9 +389,11 @@ const HomeContent = () => {
                 </div>
               ) : rooms && rooms.length > 0 ? (
                 [...rooms].sort((a, b) => {
-                  const aSoldOut = a.unavailable ? 1 : 0;
-                  const bSoldOut = b.unavailable ? 1 : 0;
-                  return aSoldOut - bSoldOut;
+                  const getSortValue = (r) => {
+                    if (r.unavailable || r.roomsToSell <= 0 || r.netBooked > (r.roomsToSell ?? 0)) return 1;
+                    return 0;
+                  };
+                  return getSortValue(a) - getSortValue(b);
                 }).map((room, idx) => {
                   const fallbackRoom = {
                     ...room,

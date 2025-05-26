@@ -70,6 +70,7 @@ export async function refreshSelectedRooms(selectedRooms, stayPeriod, breakfastI
             quantity: qty,
             promoWithBF: matchedRate.promotionPriceWithBreakfast ?? matchedRate.promotionPrice ?? updatedData.promotionPrice ?? null,
             promoRoomOnly: matchedRate.promotionRoomOnlyRate ?? matchedRate.promotionPrice ?? updatedData.promotionRoomOnlyRate ?? updatedData.promotionPrice ?? null,
+            netBooked: matchedRate.netBooked ?? 0,
           };
         } else {
           console.warn("⚠️ No matched rate for roomId:", room._id, room.roomType);
@@ -170,6 +171,7 @@ export async function refreshAllRoomRates(allRooms, stayPeriod, breakfastInclude
               (breakfastIncluded ? updatedData.promotionPrice : updatedData.promotionRoomOnlyRate) ??
               updatedData.promotionPrice ?? null,
             promoRoomOnly: updatedData.promotionRoomOnlyRate ?? updatedData.promotionPrice ?? null,
+            netBooked: updatedData.netBooked ?? 0,
           };
         } else {
           return {
