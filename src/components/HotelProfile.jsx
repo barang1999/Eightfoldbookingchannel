@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useClickOutside } from "../hooks/useClickOutside";
 import ReviewModal from "./ReviewModal";
+import MapModal from "./MapModal";
 import { AnimatePresence, motion } from "framer-motion";
 
 const SkeletonBlock = ({ className }) => (
@@ -21,9 +22,6 @@ const HotelProfile = ({ propertyId }) => {
   const [property, setProperty] = useState(null);
   const [showMapModal, setShowMapModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const mapModalRef = useRef(null);
-
-  useClickOutside(mapModalRef, () => setShowMapModal(false));
 
   useEffect(() => {
     if (!propertyId) return;
@@ -64,40 +62,11 @@ const HotelProfile = ({ propertyId }) => {
           </a>
         </div>
       </section>
-      <AnimatePresence>
-        {showMapModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center"
-          >
-            <div
-              ref={mapModalRef}
-              className="bg-white rounded-2xl w-full max-w-screen-xl mx-6 p-6 shadow-xl relative transition-all duration-300"
-            >
-              <button
-                onClick={() => setShowMapModal(false)}
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-xl font-semibold"
-              >
-                &times;
-              </button>
-              <div className="rounded-lg overflow-hidden shadow-inner border border-gray-200 w-full h-[650px]">
-                <iframe
-                  src={property.googleMapEmbed?.match(/src="([^"]+)"/)?.[1] || ""}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className="w-full h-full"
-                ></iframe>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <MapModal
+        isOpen={showMapModal}
+        onClose={() => setShowMapModal(false)}
+        embedHtml={property.googleMapEmbed}
+      />
       {showReviewModal && (
         <ReviewModal
           propertyId={propertyId}

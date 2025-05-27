@@ -16,6 +16,7 @@ import { SelectedRoomsProvider } from "../contexts/SelectedRoomsContext";
 import { refreshSelectedRooms, refreshAllRoomRates } from "../utils/rateRefresher";
 import { useSelectedRooms } from "../contexts/SelectedRoomsContext";
 import SupportButton from "../components/SupportButton";
+import Footer from "../components/Footer";
 
 const SkeletonBlock = ({ className }) => (
   <motion.div
@@ -360,7 +361,7 @@ const HomeContent = () => {
     >
       {/* Loading spinner overlay removed; rely on skeletons for loading feedback */}
       <Header />
-      <main className="bg-[#f9f9f9] min-h-screen py-6 pb-32">
+      <main className="bg-[#f9f9f9] min-h-screen py-6 pb-5">
         <SupportButton
           propertyId={property._id}
           className="fixed bottom-24 right-0 md:bottom-12 md:right-6 z-50"
@@ -460,6 +461,7 @@ const HomeContent = () => {
         onRemoveRoom={() => {}}
       />
       )}
+      <Footer propertyId={property._id} />
     </motion.div>
   );
 };
