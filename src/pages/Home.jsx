@@ -8,6 +8,7 @@ import { fetchRates } from "../services/rateService";
 import Header from "../components/Header";
 import HotelProfile from "../components/HotelProfile";
 import RoomSearchFilters from "../components/RoomSearchFilters";
+import HotelLocationMap from "../components/HotelLocationMap";
 import MobileBookingCart from "../components/MobileBookingCart";
 import MobilePriceSummary from "../components/MobilePriceSummary";
 import { normalizeSelectedRooms } from "../utils/normalizeSelectedRooms";
@@ -419,7 +420,11 @@ const HomeContent = () => {
               ) : (
                 <div className="text-center text-gray-500">No rooms available.</div>
               )}
+
+              <HotelLocationMap propertyId={property._id} />
             </div>
+
+            
 
             
 
