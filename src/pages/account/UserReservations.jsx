@@ -653,17 +653,26 @@ const ReservationsSection = () => {
   // Filtered tour bookings based on tag
   const filteredTourBookings = useMemo(() => {
     return tourBookings.filter((tour) => {
-      const tourDate = new Date(tour.date);
-      const isPast = tourDate < now;
-      const isActive = tour.status === "confirmed" && tourDate.toDateString() === now.toDateString();
-      const isUpcoming = tourDate > now;
+      const now = new Date();
+      const [hours, minutes] = tour.time.split(":").map(Number);
+      const tourDateTime = new Date(tour.date);
+      tourDateTime.setHours(hours, minutes, 0, 0);
+
+      const cutoffTime = new Date(tourDateTime);
+      cutoffTime.setHours(17, 0, 0, 0); // 5 PM
+
+      const isToday = tourDateTime.toDateString() === now.toDateString();
+      const isPast = now >= cutoffTime;
+      // PATCH: Update isActive logic per instructions
+      const isActive = tour.status === "Confirmed" && now >= tourDateTime && now < cutoffTime;
+      const isUpcoming = tour.status === "Confirmed" && tourDateTime > now;
 
       if (tourFilter === "past") return isPast;
       if (tourFilter === "active") return isActive;
       if (tourFilter === "upcoming") return isUpcoming;
       return true;
     });
-  }, [tourBookings, tourFilter, now]);
+  }, [tourBookings, tourFilter]);
 
   // Handler for when a booking is cancelled, triggers re-render
   const handleBookingCancelled = (cancelledId) => {
@@ -835,70 +844,73 @@ const ReservationsSection = () => {
               {filteredTourBookings.map((tour) => (
                 <div key={tour._id} className="border p-4 rounded shadow-sm">
                   <div className="flex items-center justify-between gap-4 mb-2 flex-wrap sm:flex-nowrap">
-                    <h2
-                      onClick={async () => {
-                        try {
-                          const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/services/${tour.tourId}`);
-                          setSelectedTour({
-                            ...res.data,
-                            transportType: tour.transportType,
-                            time: tour.time,
-                            date: tour.date,
-                            subtotal: tour.subtotal,
-                            total: tour.total,
-                            specialRequest: tour.specialRequest,
-                          });
-                          setIsTourModalOpen(true);
-                        } catch (err) {
-                          console.error("❌ Failed to fetch full tour data:", err);
-                        }
-                      }}
-                      className="font-semibold text-lg text-theme cursor-pointer hover:underline"
-                    >
-                      {tour.tourType}
-                    </h2>
-                    <div className="flex flex-wrap items-center gap-2 text-xs">
-                      {tour.status === "confirmed" && (
-                        <span className="inline-flex items-center gap-1 border border-green-600 text-green-700 px-2 py-0.5 rounded-full font-medium">
-                          <CheckCircle className="w-4 h-4" /> Confirmed
-                        </span>
-                      )}
-                      {new Date() - new Date(tour.createdAt) < 4 * 60 * 60 * 1000 && (
-                        <span className="inline-flex items-center gap-1 border border-[#A58E63] text-[#A58E63] px-2 py-0.5 rounded-full font-medium">
-                          <BadgeCheck className="w-4 h-4" /> Recent Booking
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  {/* Status tags: Upcoming, Active, Past */}
-                  <div className="flex flex-wrap items-center gap-2 text-xs">
-                    {(() => {
-                      const today = new Date();
-                      const tourDate = new Date(tour.date);
-                      const isPast = tourDate < today;
-                      const isActive = tour.status === "confirmed" && tourDate.toDateString() === today.toDateString();
-                      const isUpcoming = tourDate > today;
+                    <div className="flex flex-col">
+                      <h2
+                        onClick={async () => {
+                          try {
+                            const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/services/${tour.tourId}`);
+                            setSelectedTour({
+                              ...res.data,
+                              transportType: tour.transportType,
+                              time: tour.time,
+                              date: tour.date,
+                              subtotal: tour.subtotal,
+                              total: tour.total,
+                              specialRequest: tour.specialRequest,
+                            });
+                            setIsTourModalOpen(true);
+                          } catch (err) {
+                            console.error("❌ Failed to fetch full tour data:", err);
+                          }
+                        }}
+                        className="font-semibold text-lg text-theme cursor-pointer hover:underline flex items-center gap-2 flex-wrap"
+                      >
+                        {tour.tourType}
+                        {/* Timeline badge here only */}
+                        {(() => {
+                          const now = new Date();
+                          const [hours, minutes] = tour.time.split(":").map(Number);
+                          const tourDateTime = new Date(tour.date);
+                          tourDateTime.setHours(hours, minutes, 0, 0);
+                          const cutoffTime = new Date(tourDateTime);
+                          cutoffTime.setHours(17, 0, 0, 0);
+                          const isActive = tour.status === "Confirmed" && now >= tourDateTime && now < cutoffTime;
+                          const isUpcoming = tour.status === "Confirmed" && tourDateTime > now;
+                          const isPast = now >= cutoffTime;
 
-                      return (
-                        <>
-                          {isUpcoming && (
-                            <span className="inline-flex items-center gap-1 border border-blue-500 text-blue-600 px-2 py-0.5 rounded-full font-medium">
-                              Upcoming
-                            </span>
-                          )}
-                          {isActive && (
-                            <span className="inline-flex items-center gap-1 border border-green-500 text-green-600 px-2 py-0.5 rounded-full font-medium">
-                              Active
-                            </span>
-                          )}
-                          {isPast && (
-                            <span className="inline-flex items-center gap-1 border border-gray-400 text-gray-600 px-2 py-0.5 rounded-full font-medium">
-                              Past
-                            </span>
-                          )}
-                        </>
-                      );
-                    })()}
+                          if (isActive) {
+                            return <span className="inline-flex items-center gap-1 border border-green-500 text-green-600 px-2 py-0.5 rounded-full font-medium text-xs">Active</span>;
+                          } else if (isUpcoming) {
+                            return <span className="inline-flex items-center gap-1 border border-blue-500 text-blue-600 px-2 py-0.5 rounded-full font-medium text-xs">Upcoming</span>;
+                          } else if (isPast) {
+                            return <span className="inline-flex items-center gap-1 border border-gray-400 text-gray-600 px-2 py-0.5 rounded-full font-medium text-xs">Past</span>;
+                          } else return null;
+                        })()}
+                      </h2>
+                      {/* Status badge (Confirmed/Cancelled/Completed) below title */}
+                      <div className="mt-1">
+                        {tour.status === "Confirmed" && (
+                          <span className="inline-flex items-center gap-1 border border-green-600 text-green-700 px-2 py-0.5 rounded-full font-medium text-xs">
+                            <CheckCircle className="w-4 h-4" /> Confirmed
+                          </span>
+                        )}
+                        {tour.status === "Cancelled" && (
+                          <span className="inline-flex items-center gap-1 border border-red-600 text-red-700 px-2 py-0.5 rounded-full font-medium text-xs">
+                            <XCircle className="w-4 h-4" /> Cancelled
+                          </span>
+                        )}
+                        {tour.status === "Completed" && (
+                          <span className="inline-flex items-center gap-1 border border-gray-400 text-gray-600 px-2 py-0.5 rounded-full font-medium text-xs">
+                            <CheckCircle className="w-4 h-4" /> Completed
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {new Date() - new Date(tour.createdAt) < 4 * 60 * 60 * 1000 && (
+                      <span className="inline-flex items-center gap-1 border border-[#A58E63] text-[#A58E63] px-2 py-0.5 rounded-full font-medium text-xs">
+                        <BadgeCheck className="w-4 h-4" /> Recent Booking
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-gray-600">
                     Date: {new Date(tour.date).toLocaleDateString("en-GB", {
