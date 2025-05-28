@@ -151,6 +151,9 @@ export default function RegisterPage() {
             <button
               onClick={async () => {
                 try {
+                  localStorage.setItem('postAuthRedirect', window.location.pathname);
+                  console.log('[Google Register] Saved redirect path:', window.location.pathname);
+
                   const result = await signInWithGoogle();
                   if (result?.user) {
                     const user = result.user;
@@ -193,7 +196,14 @@ export default function RegisterPage() {
                     const resultData = await response.json();
                     console.log('[Google Register Sync] MongoDB response:', resultData);
 
-                    navigate('/login');
+                    const lastVisitedPath = localStorage.getItem('lastVisitedPath');
+                    if (lastVisitedPath && lastVisitedPath !== '/login' && lastVisitedPath !== '/register') {
+                      console.log('[Google Register] Redirecting to lastVisitedPath:', lastVisitedPath);
+                      navigate(lastVisitedPath);
+                    } else {
+                      console.log('[Google Register] No lastVisitedPath found, navigating to home');
+                      navigate('/');
+                    }
                   }
                 } catch (err) {
                   console.error(err.message);

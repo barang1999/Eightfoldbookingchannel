@@ -43,7 +43,29 @@ const HotelProfile = ({ propertyId }) => {
   return (
     <>
       <section className="bg-white px-6 py-6 shadow-sm rounded-xl mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">{property.name}</h2>
+        <h2 className="text-2xl font-bold text-gray-800">
+          <a
+            href={property.socialLinks?.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            {property.name}
+          </a>
+        </h2>
+        {property.socialLinks?.website && (
+          <div className="text-sm mt-1">
+            <a
+              href={property.socialLinks.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+              style={{ color: '#A58E63' }}
+            >
+              Visit hotel website
+            </a>
+          </div>
+        )}
 
         <div className="mt-2 text-sm text-gray-600">
           Resorts {property.hotelStarRating} {"★".repeat(property.hotelStarRating)} | <span

@@ -7,10 +7,9 @@ const UserProfileInfo = () => {
   const { profile, user } = useAuth();
 
   const displayName = profile?.fullName?.trim()
-    ? profile.fullName.trim().split(" ")[0]
-    : user?.email
-    ? user.email.charAt(0).toUpperCase()
-    : "Guest";
+    || user?.displayName
+    || user?.email
+    || "Guest";
 
   return (
     <div className="mb-6 px-4 text-gray-800">
