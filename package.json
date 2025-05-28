@@ -8,11 +8,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@headlessui/react": "^2.2.2",
     "@heroicons/react": "^2.2.0",
+    "@mui/material": "^7.1.0",
     "axios": "^1.9.0",
     "bwip-js": "^4.6.0",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
     "firebase": "^11.6.1",
     "framer-motion": "^12.9.2",
     "i18next": "^25.1.1",
@@ -24,11 +28,13 @@
     "react-datepicker": "^8.3.0",
     "react-device-detect": "^2.2.3",
     "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.5.2",
     "react-i18next": "^15.5.1",
     "react-icons": "^5.5.0",
     "react-responsive": "^10.0.1",
     "react-router-dom": "^6.22.3",
-    "request-ip": "^3.3.0"
+    "request-ip": "^3.3.0",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.1.0",

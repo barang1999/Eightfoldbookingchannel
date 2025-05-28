@@ -43,6 +43,10 @@ import CancelReservationModal from "../../components/CancelReservationModal";
 import SupportButton from "../../components/SupportButton";
 import TourDetailModal from "../../components/TourDetailModal";
 import ModifyRequestModal from "../../components/ModifyRequestModal";
+import Drawer from "@mui/material/Drawer";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import ReservationChat from "../../components/ReservationChat";
 
 const BookingCard = ({ booking, onCancelled, propertyEmail }) => {
   const navigate = useNavigate();
@@ -57,6 +61,7 @@ const BookingCard = ({ booking, onCancelled, propertyEmail }) => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [showCancelToast, setShowCancelToast] = useState(false);
   const [showModifyNotice, setShowModifyNotice] = useState(false);
+  const [isGuestChatOpen, setIsGuestChatOpen] = useState(false);
   // Room details map for expanded rooms
   const [roomDetailsMap, setRoomDetailsMap] = useState({});
   // Fetch and merge room details when expanded
@@ -441,6 +446,12 @@ const BookingCard = ({ booking, onCancelled, propertyEmail }) => {
                 <MapPin size={16} className="inline mr-1" /> View on Map
               </button>
             )}
+            <button
+              className="px-3 py-1 text-sm rounded-full border border-[#A58E63] text-black hover:bg-[#A58E63]/10 transition inline-flex items-center gap-1"
+              onClick={() => setIsGuestChatOpen(true)}
+            >
+              💬 Chat with Hotel
+            </button>
           </div>
         )}
         
@@ -540,6 +551,66 @@ const BookingCard = ({ booking, onCancelled, propertyEmail }) => {
             onClose={() => setIsMapOpen(false)}
             embedHtml={propertyData.googleMapEmbed}
           />
+        )}
+       {isGuestChatOpen && (
+          <Drawer anchor="right" open={isGuestChatOpen} onClose={() => setIsGuestChatOpen(false)}>
+            <AnimatePresence>
+              {isGuestChatOpen && (
+                <motion.div
+                  initial={{ x: 100, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: 100, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Box
+                    sx={{
+                      p: 3,
+                      width: { xs: '100%', sm: 500 },
+                      maxWidth: '100vw',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 0.5,
+                        fontSize: "1rem",
+                        fontWeight: 600,
+                        color: '#A58E63'
+                      }}
+                    >
+                      {hotelName}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ mb: 0.5, fontSize: "0.85rem", color: '#888' }}
+                    >
+                     {booking.referenceNumber}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        mb: 1,
+                        fontSize: "0.85rem",
+                        color: '#888'
+                      }}
+                    >
+                      {new Date(booking.checkIn).toLocaleDateString()} → {new Date(booking.checkOut).toLocaleDateString()}
+                    </Typography>
+                    
+                    <ReservationChat
+                      reservationId={booking._id}
+                      guestEmail={booking.email}
+                      propertyId={booking.propertyId}
+                      sender="guest"
+                    />
+                  </Box>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Drawer>
         )}
       </div>
         {isCancelModalOpen && (
