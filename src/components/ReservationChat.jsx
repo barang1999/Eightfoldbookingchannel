@@ -3,13 +3,13 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, TextField, Button, Paper } from '@mui/material';
+import { Clock, Check, CheckCheck, AlertCircle } from 'lucide-react';
 import { io } from 'socket.io-client';
 const socket = io(import.meta.env.VITE_API_BASE_URL);
 
 const ReservationChat = ({ reservationId, guestEmail, propertyId, sender = "hotel" }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
   const messagesRef = useRef([]);
 
   useEffect(() => {
@@ -17,54 +17,163 @@ const ReservationChat = ({ reservationId, guestEmail, propertyId, sender = "hote
       .then(res => res.json())
       .then(data => {
         console.log("📥 Initial messages loaded from server:", data.messages);
-        setMessages(data.messages || []);
-        messagesRef.current = data.messages || [];
+        const msgs = data.messages || [];
+        setMessages(msgs);
+        messagesRef.current = msgs;
+
+        if (sender === "hotel") {
+          const unseen = msgs.filter(m => m.sender !== "hotel" && !m.seen);
+          unseen.forEach((msg) => {
+            fetch(`${import.meta.env.VITE_API_BASE_URL}/api/messages/seen`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ reservationId, messageId: msg._id })
+            })
+            .then(() => {
+              console.log("✅ Seen updated on init for:", msg._id);
+              setMessages((prev) =>
+                prev.map((m) => m._id === msg._id ? { ...m, seen: true } : m)
+              );
+            })
+            .catch(console.error);
+          });
+        }
+
+        if (sender === "guest") {
+          const unseen = msgs.filter(m => m.sender !== "guest" && !m.seen);
+          console.log("🧹 Unseen hotel messages on load:", unseen);
+          unseen.forEach((msg) => {
+            fetch(`${import.meta.env.VITE_API_BASE_URL}/api/messages/seen`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ reservationId, messageId: msg._id })
+            })
+            .then(() => {
+              console.log("✅ Marked seen (guest):", msg._id);
+              setMessages((prev) =>
+                prev.map((m) => m._id === msg._id ? { ...m, seen: true } : m)
+              );
+            })
+            .catch((err) => {
+              console.error("❌ Failed to update seen status (guest) for:", msg._id, err);
+            });
+          });
+        }
       });
+
+    socket.emit("joinRoom", reservationId);
 
     socket.on("newMessage", (msg) => {
       console.log("📡 WebSocket message received:", msg);
       console.log("📋 Current optimistic messagesRef:", messagesRef.current);
-      if (msg.reservationId !== reservationId) return;
+      if (msg.reservationId && msg.reservationId !== reservationId) return;
+
+      console.log("📨 Incoming sender:", msg.sender, "| local sender:", sender);
+      if (msg.sender !== sender) {
+        console.log("👁️ Triggered mark-as-seen logic for:", msg._id);
+        console.log("👁️ Marking message as seen:", msg._id);
+        msg.seen = true;
+        // Notify backend to persist the seen status
+        fetch(`${import.meta.env.VITE_API_BASE_URL}/api/messages/seen`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reservationId: msg.reservationId, messageId: msg._id })
+        })
+        .then(() => {
+          console.log("✅ Seen status updated for:", msg._id);
+          socket.emit("messageSeen", { messageId: msg._id, reservationId: msg.reservationId });
+          setMessages((prev) => {
+            const updated = prev.map((m) =>
+              m._id === msg._id || m.tempId === msg.tempId ? { ...m, seen: true } : m
+            );
+            console.log("✅ Seen update applied in state:", updated);
+            return updated;
+          });
+        })
+        .catch((err) => {
+          console.error("❌ Failed to update seen status:", err);
+        });
+      }
+
+      console.log("🧲 Entering setMessages with:", msg);
+
+      // Only update status to "delivered" here to avoid overwriting .seen
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m._id === msg._id || m.tempId === msg.tempId) {
+            return {
+              ...m,
+              status: "delivered"
+            };
+          }
+          return m;
+        })
+      );
 
       setMessages((prev) => {
-        const matchIndex = prev.findIndex((m) => {
-          const sameTime = new Date(m.timestamp).toISOString() === new Date(msg.timestamp).toISOString();
-          const sameContent = m.content === msg.content;
-          const sameSender = m.sender === msg.sender;
-          const isOptimistic = m._id && typeof m._id === "string" && m._id.startsWith("temp-");
-
-          return (sameSender && sameContent && sameTime) || (isOptimistic && sameContent && sameSender);
-        });
+        console.log("📌 Existing messages:", prev);
+        const matchIndex = prev.findIndex((m) =>
+          m._id === msg._id || m.tempId === msg.tempId
+        );
+        console.log("🔍 Match index found:", matchIndex);
 
         if (matchIndex !== -1) {
           const updated = [...prev];
-          updated[matchIndex] = msg;
+          const existing = updated[matchIndex];
+          const merged = {
+            ...existing,
+            _id: msg._id, // ensure backend _id replaces tempId
+            content: msg.content,
+            timestamp: msg.timestamp,
+            status: "delivered",
+            seen: existing.seen || msg.seen, // preserve seen:true if already set
+          };
+          updated[matchIndex] = merged;
           messagesRef.current = updated;
-          console.log("🧩 Replaced optimistic with confirmed:", msg);
+          console.log("✅ Merged update at index", matchIndex, ":", merged);
           return updated;
         }
 
-        const updated = [...prev, msg];
-        messagesRef.current = updated;
-        console.log("📦 Appended new message:", msg);
-        return updated;
+        const newMsg = { ...msg, status: "delivered" };
+        messagesRef.current = [...prev, newMsg];
+        console.log("➕ Appending new message to list:", newMsg);
+        return [...prev, newMsg];
       });
     });
 
-    return () => socket.off("newMessage");
+    socket.on("messageSeen", ({ messageId }) => {
+      console.log("👁️ Real-time seen received (full message list):", messagesRef.current);
+      // Use messagesRef.current to update the correct message reliably
+      const updated = messagesRef.current.map((m) => {
+        const isMatch = m._id === messageId || m.tempId === messageId;
+        if (isMatch) {
+          console.log("✅ Matched message for seen update:", m);
+          return { ...m, seen: true, status: m.status ?? "delivered" };
+        }
+        return m;
+      });
+      console.log("✅ Seen update applied in state (final):", updated);
+      messagesRef.current = updated;
+      setMessages(updated);
+    });
+
+    return () => {
+      socket.off("newMessage");
+      socket.off("messageSeen");
+    };
   }, [reservationId]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
 
     const tempId = `temp-${Math.random().toString(36).substring(2, 9)}`;
-
     const msg = {
       reservationId,
       sender,
       content: input,
       guestEmail,
-      propertyId
+      propertyId,
+      tempId
     };
 
     console.log("📨 Submitting new message:", msg);
@@ -72,7 +181,8 @@ const ReservationChat = ({ reservationId, guestEmail, propertyId, sender = "hote
     const optimisticMsg = {
       ...msg,
       timestamp: new Date(),
-      _id: tempId
+      _id: tempId,
+      status: "sending"
     };
     console.log("🚀 Sending optimistic message:", optimisticMsg);
     setMessages((prev) => {
@@ -82,9 +192,6 @@ const ReservationChat = ({ reservationId, guestEmail, propertyId, sender = "hote
       return updated;
     });
     setInput("");
-    setLoading(true);
-
-    setTimeout(() => setLoading(false), 150);
 
     fetch(`${import.meta.env.VITE_API_BASE_URL}/api/messages`, {
       method: "POST",
@@ -129,9 +236,15 @@ const ReservationChat = ({ reservationId, guestEmail, propertyId, sender = "hote
               <Typography variant="body2">
                 {msg.content}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {dayjs(msg.timestamp).fromNow()}
-              </Typography>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Typography variant="caption" color="text.secondary">
+                  {dayjs(msg.timestamp).fromNow()}
+                </Typography>
+                {msg.status === "sending" && <Clock size={14} style={{ marginLeft: 6 }} />}
+                {msg.status === "delivered" && !msg.seen && <Check size={14} style={{ marginLeft: 6 }} />}
+                {msg.seen && <CheckCheck size={14} style={{ marginLeft: 6 }} />}
+                {msg.status === "failed" && <AlertCircle size={14} style={{ marginLeft: 6 }} />}
+              </Box>
             </Box>
           </Box>
         ))}
@@ -149,10 +262,10 @@ const ReservationChat = ({ reservationId, guestEmail, propertyId, sender = "hote
         <Button
           variant="contained"
           onClick={sendMessage}
-          disabled={!input.trim() || loading}
+          disabled={!input.trim()}
           sx={{ height: '100%' }}
         >
-          {loading ? "Sending..." : "Send"}
+          Send
         </Button>
       </Box>
     </Box>
