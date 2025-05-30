@@ -46,20 +46,18 @@ const Header = () => {
 
   return (
     <header className="w-full bg-white shadow-md px-12 py-6 flex justify-between md:justify-center relative">
-      {property?.socialLinks?.website ? (
-        <img
-          src="/Logo.png"
-          alt="Eightfold Logo"
-          className="h-10 md:h-16 cursor-pointer"
-          onClick={() => (window.location.href = property.socialLinks.website)}
-        />
-      ) : (
-        <img
-          src="/Logo.png"
-          alt="Eightfold Logo"
-          className="h-10 md:h-16"
-        />
-      )}
+      <img
+        src="/Logo.png"
+        alt="Eightfold Logo"
+        className="h-10 md:h-16 cursor-pointer"
+        onClick={() => {
+          if (property?.socialLinks?.website) {
+            window.location.href = property.socialLinks.website;
+          } else {
+            navigate("/");
+          }
+        }}
+      />
       <div className="absolute right-4 md:right-6 flex items-center gap-4 text-sm">
         <button
           onClick={() => setIsModalOpen(true)}
