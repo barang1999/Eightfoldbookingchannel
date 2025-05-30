@@ -4,6 +4,7 @@ import { SelectedRoomsProvider } from "./contexts/SelectedRoomsContext";
 import { SelectedDateProvider } from "./contexts/SelectedDateContext";
 import { CurrencyProvider } from "./contexts/CurrencyProvider";
 import { SelectedServicesProvider } from "./contexts/SelectedServicesContext"; // ✅ Add this
+import { PropertyProvider } from "./contexts/PropertyContext";
 
 function App() {
   useEffect(() => {
@@ -15,17 +16,19 @@ function App() {
     return () => window.removeEventListener('resize', setAppHeight);
   }, []);
   return (
-    <CurrencyProvider>
-      <SelectedDateProvider>
-        <SelectedRoomsProvider>
-          <SelectedServicesProvider> {/* ✅ Wrap here */}
-            <div className="font-sans bg-gray-50 min-h-screen">
-              <Outlet />
-            </div>
-          </SelectedServicesProvider>
-        </SelectedRoomsProvider>
-      </SelectedDateProvider>
-    </CurrencyProvider>
+    <PropertyProvider>
+      <CurrencyProvider>
+        <SelectedDateProvider>
+          <SelectedRoomsProvider>
+            <SelectedServicesProvider> {/* ✅ Wrap here */}
+              <div className="font-sans bg-gray-50 min-h-screen">
+                <Outlet />
+              </div>
+            </SelectedServicesProvider>
+          </SelectedRoomsProvider>
+        </SelectedDateProvider>
+      </CurrencyProvider>
+    </PropertyProvider>
   );
 }
 

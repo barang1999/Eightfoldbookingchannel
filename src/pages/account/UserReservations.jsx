@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useClickOutside } from "../../hooks/useClickOutside";
 // Attempt to import toast from react-hot-toast, fallback to custom modal if not available
 let toast;
 try {
@@ -30,7 +31,7 @@ const SkeletonBlock = ({ className }) => (
 import { differenceInCalendarDays } from "date-fns";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from "react-router-dom";
-import { Hotel, Calendar, Mountain, Ticket, ChevronDown, ChevronUp, Pencil, Phone, Mail, MapPin, FileDown } from "lucide-react";
+import { Hotel, Calendar, Mountain, Ticket, ChevronDown, ChevronUp, Pencil, Phone, Mail, MapPin, FileDown, MessageSquare } from "lucide-react";
 import { CheckCircle, BedDouble, Wifi, BadgeCheck, XCircle } from "lucide-react";
 import { Trash2 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
@@ -64,6 +65,8 @@ const BookingCard = ({ booking, onCancelled, propertyEmail }) => {
   const [isGuestChatOpen, setIsGuestChatOpen] = useState(false);
   // Room details map for expanded rooms
   const [roomDetailsMap, setRoomDetailsMap] = useState({});
+  const chatBoxRef = useRef(null);
+  useClickOutside(chatBoxRef, () => setIsGuestChatOpen(false));
   // Fetch and merge room details when expanded
   useEffect(() => {
     if (expanded && booking.rooms?.length > 0) {
@@ -228,6 +231,14 @@ const BookingCard = ({ booking, onCancelled, propertyEmail }) => {
           <p className="text-sm text-gray-600">
             Booked for: <span className="font-semibold text-black">{booking.fullName || "Guest"}</span>
           </p>
+          {booking.status !== "cancelled" && (
+            <button
+              className="mt-2 px-3 py-1 text-sm rounded-full border border-[#A58E63] text-black hover:bg-[#A58E63]/10 transition inline-flex items-center gap-1"
+              onClick={() => setIsGuestChatOpen(true)}
+            >
+              <MessageSquare size={16} className="text-[#A58E63]" /> Chat with Hotel
+            </button>
+          )}
         </div>
       </div>
       <div className="flex items-center justify-between">
@@ -446,12 +457,6 @@ const BookingCard = ({ booking, onCancelled, propertyEmail }) => {
                 <MapPin size={16} className="inline mr-1" /> View on Map
               </button>
             )}
-            <button
-              className="px-3 py-1 text-sm rounded-full border border-[#A58E63] text-black hover:bg-[#A58E63]/10 transition inline-flex items-center gap-1"
-              onClick={() => setIsGuestChatOpen(true)}
-            >
-              💬 Chat with Hotel
-            </button>
           </div>
         )}
         
@@ -552,66 +557,48 @@ const BookingCard = ({ booking, onCancelled, propertyEmail }) => {
             embedHtml={propertyData.googleMapEmbed}
           />
         )}
-       {isGuestChatOpen && (
-          <Drawer anchor="right" open={isGuestChatOpen} onClose={() => setIsGuestChatOpen(false)}>
-            <AnimatePresence>
-              {isGuestChatOpen && (
-                <motion.div
-                  initial={{ x: 100, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: 100, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+      {isGuestChatOpen && (
+        <div
+          ref={chatBoxRef}
+          className="fixed inset-0 z-50 bg-white sm:w-[500px] sm:right-0 sm:left-auto sm:top-0 sm:bottom-0 sm:fixed sm:border-l sm:border-gray-200"
+        >
+          <motion.div
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 100, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="h-full flex flex-col"
+          >
+            <div className="flex justify-between items-start p-3 border-b">
+              <div>
+                <Typography
+                  variant="h6"
+                  sx={{ fontSize: "1rem", fontWeight: 600, color: '#A58E63' }}
                 >
-                  <Box
-                    sx={{
-                      p: 3,
-                      width: { xs: '100%', sm: 500 },
-                      maxWidth: '100vw',
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        mb: 0.5,
-                        fontSize: "1rem",
-                        fontWeight: 600,
-                        color: '#A58E63'
-                      }}
-                    >
-                      {hotelName}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ mb: 0.5, fontSize: "0.85rem", color: '#888' }}
-                    >
-                     {booking.referenceNumber}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        mb: 1,
-                        fontSize: "0.85rem",
-                        color: '#888'
-                      }}
-                    >
-                      {new Date(booking.checkIn).toLocaleDateString()} → {new Date(booking.checkOut).toLocaleDateString()}
-                    </Typography>
-                    
-                    <ReservationChat
-                      reservationId={booking._id}
-                      guestEmail={booking.email}
-                      propertyId={booking.propertyId}
-                      sender="guest"
-                    />
-                  </Box>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </Drawer>
-        )}
+                  {hotelName}
+                </Typography>
+                <Typography variant="body2" sx={{ fontSize: "0.85rem", color: '#888' }}>
+                  {booking.referenceNumber}
+                </Typography>
+                <Typography variant="body2" sx={{ fontSize: "0.85rem", color: '#888' }}>
+                  {new Date(booking.checkIn).toLocaleDateString()} → {new Date(booking.checkOut).toLocaleDateString()}
+                </Typography>
+              </div>
+              <button onClick={() => setIsGuestChatOpen(false)} className="text-red-500 text-xl font-bold px-2">
+                ×
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <ReservationChat
+                reservationId={booking._id}
+                guestEmail={booking.email}
+                propertyId={booking.propertyId}
+                sender="guest"
+              />
+            </div>
+          </motion.div>
+        </div>
+      )}
       </div>
         {isCancelModalOpen && (
           <CancelReservationModal
@@ -1103,7 +1090,7 @@ const ReservationsSection = () => {
         </div>
       )} */}
       {/* Sticky Help & Support button */}
-      <div className="fixed bottom-6 right-0 z-50">
+      <div className="fixed bottom-6 right-0 z-40">
         <SupportButton />
       </div>
     </div>

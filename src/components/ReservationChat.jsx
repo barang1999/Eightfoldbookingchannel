@@ -11,6 +11,7 @@ const ReservationChat = ({ reservationId, guestEmail, propertyId, sender = "hote
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesRef = useRef([]);
+  const bottomRef = useRef(null);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE_URL}/api/messages/${reservationId}`)
@@ -163,6 +164,12 @@ const ReservationChat = ({ reservationId, guestEmail, propertyId, sender = "hote
     };
   }, [reservationId]);
 
+  useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   const sendMessage = async () => {
     if (!input.trim()) return;
 
@@ -203,70 +210,83 @@ const ReservationChat = ({ reservationId, guestEmail, propertyId, sender = "hote
   };
 
   return (
-    <Box mt={1}>
-     
-      <Paper
-        variant="outlined"
-        sx={{
-          maxHeight: 580,
-          minHeight: 450,
-          overflowY: "auto",
-          mb: 2,
-          p: 2,
-          maxWidth: '100%',
-          marginLeft: 'auto',
-          marginRight: 'auto'
-        }}
-      >
-        {messages.map((msg, i) => (
-          <Box key={i} textAlign={msg.sender === sender ? "right" : "left"}>
-            <Box
-              sx={{
-                display: "inline-block",
-                bgcolor: msg.sender === sender ? "#e6f4ea" : "#f0f0f0",
-                borderRadius: 3,
-                px: 2,
-                py: 1.2,
-                my: 1.2,
-                maxWidth: "85%",
-                fontSize: "1rem",
-                lineHeight: 1.6,
-              }}
-            >
-              <Typography variant="body2">
-                {msg.content}
-              </Typography>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
-                <Typography variant="caption" color="text.secondary">
-                  {dayjs(msg.timestamp).fromNow()}
+    <Box mt={1} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Box sx={{ flex: 1, overflowY: 'auto' }}>
+        <Paper
+          
+          sx={{
+            maxHeight: 700,
+            minHeight: 450,
+            overflowY: "auto",
+            mb: 0,
+            p: 2,
+            maxWidth: '100%',
+            marginLeft: 'auto',
+            marginRight: 'auto'
+          }}
+        >
+          {messages.map((msg, i) => (
+            <Box key={i} textAlign={msg.sender === sender ? "right" : "left"}>
+              <Box
+                sx={{
+                  display: "inline-block",
+                  bgcolor: msg.sender === sender ? "#e6f4ea" : "#f0f0f0",
+                  borderRadius: 3,
+                  px: 2,
+                  py: 1.2,
+                  my: 1.2,
+                  maxWidth: "85%",
+                  fontSize: "1rem",
+                  lineHeight: 1.6,
+                }}
+              >
+                <Typography variant="body2">
+                  {msg.content}
                 </Typography>
-                {msg.status === "sending" && <Clock size={14} style={{ marginLeft: 6 }} />}
-                {msg.status === "delivered" && !msg.seen && <Check size={14} style={{ marginLeft: 6 }} />}
-                {msg.seen && <CheckCheck size={14} style={{ marginLeft: 6 }} />}
-                {msg.status === "failed" && <AlertCircle size={14} style={{ marginLeft: 6 }} />}
+                <Box display="flex" alignItems="center" justifyContent="space-between">
+                  <Typography variant="caption" color="text.secondary">
+                    {dayjs(msg.timestamp).fromNow()}
+                  </Typography>
+                  {msg.status === "sending" && <Clock size={14} style={{ marginLeft: 6 }} />}
+                  {msg.status === "delivered" && !msg.seen && <Check size={14} style={{ marginLeft: 6 }} />}
+                  {msg.seen && <CheckCheck size={14} style={{ marginLeft: 6 }} />}
+                  {msg.status === "failed" && <AlertCircle size={14} style={{ marginLeft: 6 }} />}
+                </Box>
               </Box>
             </Box>
-          </Box>
-        ))}
-      </Paper>
-
-      <Box display="flex" alignItems="center" gap={1}>
-        <TextField
-          fullWidth
-          multiline
-          rows={2}
-          placeholder="Type a message..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <Button
-          variant="contained"
-          onClick={sendMessage}
-          disabled={!input.trim()}
-          sx={{ height: '100%' }}
-        >
-          Send
-        </Button>
+          ))}
+          <div ref={bottomRef} />
+        </Paper>
+      </Box>
+      <Box
+        sx={{
+          position: 'sticky',
+          bottom: 0,
+          backgroundColor: 'white',
+          p: 2,
+          borderTop: '1px solid #eee',
+          zIndex: 10
+        }}
+      >
+        <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="flex items-center gap-2">
+          <TextField
+            fullWidth
+            variant="outlined"
+            size="small"
+            placeholder="Type your message..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            InputProps={{
+              sx: {
+                height: { xs: 40, sm: 48, md: 52 }, // slightly larger for desktop
+                fontSize: { xs: '0.875rem', sm: '0.95rem', md: '1rem' }
+              }
+            }}
+          />
+          <Button type="submit" variant="contained" disabled={!input.trim()}>
+            Send
+          </Button>
+        </form>
       </Box>
     </Box>
   );

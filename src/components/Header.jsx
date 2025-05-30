@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useRef } from "react";
 import { useClickOutside } from "../hooks/useClickOutside"; // adjust path if needed
 import { Listbox } from '@headlessui/react';
@@ -9,12 +10,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import MobileUserDropdown from "./MobileUserDropdown";
 import DesktopUserDropdown from "./DesktopUserDropdown";
 import { useNavigate } from "react-router-dom";
+import { useProperty } from "../contexts/PropertyContext";
 
 const Header = () => {
   const { currency, setCurrency } = useCurrency();
   const { user, profile } = useAuth();
 
   const navigate = useNavigate();
+
+  const property = useProperty();
+
+  console.log("Header property name:", property?.name);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -35,14 +41,25 @@ const Header = () => {
     return "Sign in / Sign up";
   };
 
+  // Debug log for website URL
+  console.log("Website Link:", property?.socialLinks?.website);
+
   return (
     <header className="w-full bg-white shadow-md px-12 py-6 flex justify-between md:justify-center relative">
-      <img
-        src="/Logo.png"
-        alt="Eightfold Logo"
-        className="h-10 md:h-16 cursor-pointer"
-        onClick={() => navigate("/")}
-      />
+      {property?.socialLinks?.website ? (
+        <img
+          src="/Logo.png"
+          alt="Eightfold Logo"
+          className="h-10 md:h-16 cursor-pointer"
+          onClick={() => (window.location.href = property.socialLinks.website)}
+        />
+      ) : (
+        <img
+          src="/Logo.png"
+          alt="Eightfold Logo"
+          className="h-10 md:h-16"
+        />
+      )}
       <div className="absolute right-4 md:right-6 flex items-center gap-4 text-sm">
         <button
           onClick={() => setIsModalOpen(true)}
