@@ -21,7 +21,7 @@ import { useSelectedRooms } from "../contexts/SelectedRoomsContext";
 import { BedDouble, Users } from "lucide-react";
 import RoomDetailModal from "./RoomDetailModal";
 
-const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate }) => {
+const RoomCard = ({ room, propertyId, onAddRoom, loadingRate }) => {
   const isOverbooked = room?.netBooked > (room?.roomsToSell ?? 0);
   const isSoldOut = room?.unavailable || room?.availability === false || room?.roomsToSell === 0 || isOverbooked;
   // Debugging: inspect overbooked/sold out logic
@@ -30,7 +30,6 @@ const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate 
   console.log("Net Booked:", room?.netBooked);
   console.log("Is Overbooked?", isOverbooked);
   console.log("Is Sold Out?", isSoldOut);
-  const includeBreakfast = breakfastIncluded;
   // promoPrice, basePrice, isPromoBookable are defined below, so we add a dummy log here and another after they're declared
   
   const todayDate = new Date();
@@ -51,14 +50,9 @@ const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate 
     (!bookableStartStr || todayStr >= bookableStartStr) &&
     (!bookableEndDate || today <= bookableEndDate);
 
-  const promoPrice = room.breakfastIncluded
-    ? room.promoWithBF ?? room.promotionPrice ?? null
-    : room.promoRoomOnly ?? room.promotionRoomOnlyRate ?? null;
-  
+  const promoPrice = room.promoWithBF ?? room.promotionPrice ?? null;
 
-  const basePrice = room.breakfastIncluded
-    ? room.basePriceWithBreakfast ?? room.originalPriceWithBreakfast ?? room.perNight ?? room.price ?? 0
-    : room.basePriceRoomOnly ?? room.originalRoomOnlyRate ?? room.perNight ?? room.price ?? 0;
+  const basePrice = room.basePriceWithBreakfast ?? room.originalPriceWithBreakfast ?? room.perNight ?? room.price ?? 0;
 
 
   // Show promo badge only if promo is active and price is strictly lower than base
@@ -102,9 +96,7 @@ const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate 
   );
 
 
-  const originalPublicRate = room.breakfastIncluded
-    ? room.originalPriceWithBreakfast ?? null
-    : room.originalPriceRoomOnly ?? null;
+  const originalPublicRate = room.originalPriceWithBreakfast ?? null;
 
   
 
@@ -236,11 +228,9 @@ const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate 
                 {t("actions.specialOffer", { defaultValue: "Special Offer" })}
               </div>
               <div className="flex flex-wrap gap-2 mb-1 justify-end">
-                {Boolean(room.breakfastIncluded) && (
-                  <span className="inline-block text-[11px] font-medium text-emerald-700  border border-emerald-300 px-2 py-0.5 rounded-full shadow-sm">
-                    {t("actions.breakfastIncluded", { defaultValue: "Breakfast Included" })}
-                  </span>
-                )}
+                <span className="inline-block text-[11px] font-medium text-emerald-700  border border-emerald-300 px-2 py-0.5 rounded-full shadow-sm">
+                  {t("actions.breakfastIncluded", { defaultValue: "Breakfast Included" })}
+                </span>
                 {hasPromotion && (
                   <span className="inline-block text-[11px] font-medium text-red-700  border border-red-300 px-2 py-0.5 rounded-full shadow-sm">
                     {t("actions.promoRate", { defaultValue: "Promo Rate" })}
@@ -297,7 +287,7 @@ const RoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadingRate 
                     guests: `${room.capacity?.maxAdults || 2} adults${room.capacity?.maxChildren ? `, ${room.capacity.maxChildren} child${room.capacity.maxChildren > 1 ? "ren" : ""}` : ''}`,
                     startDate: startDate,
                     endDate: endDate,
-                    breakfastIncluded: localStorage.getItem("includeBreakfast") === "true",
+                    breakfastIncluded: true,
                     price: totalStayPrice,
                     perNight: room.perNight ?? (displayPrice / nights),
                     nights,

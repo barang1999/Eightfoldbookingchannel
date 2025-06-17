@@ -43,14 +43,9 @@ const ModifyRoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadin
     (!bookableStartStr || todayStr >= bookableStartStr) &&
     (!bookableEndDate || today <= bookableEndDate);
 
-  const promoPrice = room.breakfastIncluded
-    ? room.promoWithBF ?? room.promotionPrice ?? null
-    : room.promoRoomOnly ?? room.promotionRoomOnlyRate ?? null;
-  
-
-  const basePrice = room.breakfastIncluded
-    ? room.basePriceWithBreakfast ?? room.originalPriceWithBreakfast ?? room.perNight ?? room.price ?? 0
-    : room.basePriceRoomOnly ?? room.originalRoomOnlyRate ?? room.perNight ?? room.price ?? 0;
+  // Only use breakfast-included prices
+  const promoPrice = room.promoWithBF ?? room.promotionPrice ?? null;
+  const basePrice = room.basePriceWithBreakfast ?? room.originalPriceWithBreakfast ?? room.perNight ?? room.price ?? 0;
 
 
   // Show promo badge only if promo is active and price is strictly lower than base
@@ -95,9 +90,7 @@ const ModifyRoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadin
   );
 
 
-  const originalPublicRate = room.breakfastIncluded
-    ? room.originalPriceWithBreakfast ?? null
-    : room.originalPriceRoomOnly ?? null;
+  const originalPublicRate = room.originalPriceWithBreakfast ?? null;
 
   
 
@@ -229,11 +222,9 @@ const ModifyRoomCard = ({ room, propertyId, breakfastIncluded, onAddRoom, loadin
                 {t("actions.specialOffer", { defaultValue: "Special Offer" })}
               </div>
               <div className="flex flex-wrap gap-2 mb-1 justify-end">
-                {Boolean(room.breakfastIncluded) && (
-                  <span className="inline-block text-[11px] font-medium text-emerald-700  border border-emerald-300 px-2 py-0.5 rounded-full shadow-sm">
-                    {t("actions.breakfastIncluded", { defaultValue: "Breakfast Included" })}
-                  </span>
-                )}
+                <span className="inline-block text-[11px] font-medium text-emerald-700 border border-emerald-300 px-2 py-0.5 rounded-full shadow-sm">
+                  {t("actions.breakfastIncluded", { defaultValue: "Breakfast Included" })}
+                </span>
                 {hasPromotion && (
                   <span className="inline-block text-[11px] font-medium text-red-700  border border-red-300 px-2 py-0.5 rounded-full shadow-sm">
                     {t("actions.promoRate", { defaultValue: "Promo Rate" })}

@@ -13,8 +13,6 @@ const ModifyReservationFilters = ({
   onCheckInChange,
   onCheckOutChange,
   onGuestsChange,
-  breakfastIncluded,
-  onBreakfastChange,
   onSearch
 }) => {
   const [showCalendar, setShowCalendar] = useState(false);
@@ -102,16 +100,6 @@ const ModifyReservationFilters = ({
             {guests?.adults > 0 ? `${guests.adults} Adult${guests.adults > 1 ? "s" : ""}` : ""}
             {guests?.children > 0 ? `, ${guests.children} Child${guests.children > 1 ? "ren" : ""}` : ""}
           </div>
-          <label className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full bg-white text-sm text-gray-700 hover:shadow-md cursor-pointer w-fit mb-4">
-            <input
-              type="checkbox"
-              id="breakfastIncluded"
-              checked={breakfastIncluded}
-              onChange={(e) => onBreakfastChange(e.target.checked)}
-              className="accent-primary"
-            />
-            Breakfast included
-          </label>
           {isMobileModalOpen && (
             <MobileBookingModal
               checkIn={checkIn}
@@ -224,18 +212,6 @@ const ModifyReservationFilters = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2 px-5 py-2.5 border border-gray-300 rounded-full bg-white text-sm text-gray-700 hover:shadow-md cursor-pointer">
-              <input
-                type="checkbox"
-                id="breakfastIncluded"
-                checked={breakfastIncluded}
-                onChange={(e) => onBreakfastChange(e.target.checked)}
-                className="accent-primary"
-              />
-              Breakfast included
-            </label>
-          </div>
         </div>
       )}
     </div>

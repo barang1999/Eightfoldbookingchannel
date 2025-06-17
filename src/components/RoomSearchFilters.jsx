@@ -22,10 +22,6 @@ const RoomSearchFilters = ({ numberOfRooms, propertyId, handleSearchDate }) => {
     return [{ adults: 1, children: 0 }];
   });
   const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
-  const [includeBreakfast, setIncludeBreakfast] = useState(() => {
-    const stored = localStorage.getItem("includeBreakfast");
-    return stored === null ? false : stored === "true";
-  });
 
   const handleEditClick = () => {
     setIsMobileModalOpen(true);
@@ -139,18 +135,6 @@ const RoomSearchFilters = ({ numberOfRooms, propertyId, handleSearchDate }) => {
         const parsed = JSON.parse(stored);
         if (parsed.startDate && parsed.endDate) {
           updateDateRange(parsed.startDate, parsed.endDate);
-          if (typeof parsed.includeBreakfast === "boolean") {
-            setIncludeBreakfast(parsed.includeBreakfast);
-          } else {
-            setIncludeBreakfast(false);
-          }
-          if (parsed.includeBreakfast === true) {
-            handleSearchDate({
-              startDate: parsed.startDate,
-              endDate: parsed.endDate,
-              includeBreakfast: true,
-            });
-          }
           if (parsed.adults || parsed.children) {
             setRoomData([{ adults: parsed.adults || 1, children: parsed.children || 0 }]);
           }
@@ -159,7 +143,6 @@ const RoomSearchFilters = ({ numberOfRooms, propertyId, handleSearchDate }) => {
             handleSearchDate({
               startDate: parsed.startDate,
               endDate: parsed.endDate,
-              includeBreakfast: parsed.includeBreakfast,
             });
           }, 300);
         }
@@ -178,7 +161,6 @@ const RoomSearchFilters = ({ numberOfRooms, propertyId, handleSearchDate }) => {
   const logSearchDetails = () => {
     console.log("📅 Start Date:", dateRange.startDate);
     console.log("📅 End Date:", dateRange.endDate);
-    console.log("🍳 Breakfast Included:", includeBreakfast);
     // Here later you can trigger fetching new rates
   };
 
@@ -237,7 +219,6 @@ const RoomSearchFilters = ({ numberOfRooms, propertyId, handleSearchDate }) => {
                         endDate: newRange.endDate,
                         adults: roomData.reduce((sum, r) => sum + r.adults, 0),
                         children: roomData.reduce((sum, r) => sum + r.children, 0),
-                        includeBreakfast,
                       };
                       localStorage.setItem('lastSearchPayload', JSON.stringify(searchPayload));
                     }
@@ -272,30 +253,6 @@ const RoomSearchFilters = ({ numberOfRooms, propertyId, handleSearchDate }) => {
           <label className="flex items-center gap-2 px-3 py-2 border rounded-full hover:border-primary active:border-primary/80 transition-all duration-200 cursor-pointer hover:shadow-md">
             <input type="checkbox" className="accent-primary rounded-sm transition duration-150" />
             {t("actions.freeCancellation", "Free cancellation")}
-          </label>
-          <label className="flex items-center gap-2 px-3 py-2 border rounded-full hover:border-primary active:border-primary/80 transition-all duration-200 cursor-pointer hover:shadow-md">
-            <input 
-              type="checkbox" 
-              className="accent-primary rounded-sm transition duration-150"
-              checked={
-                typeof includeBreakfast === "boolean"
-                  ? includeBreakfast
-                  : false
-              }
-              onChange={(e) => {
-                const val = e.target.checked;
-                console.log("🧲 Breakfast checkbox toggled:", val);
-
-                if (typeof includeBreakfast === "boolean" && typeof handleSearchDate === "function") {
-                  handleSearchDate({ ...dateRange, includeBreakfast: val });
-                }
-
-                setIncludeBreakfast(val);
-                localStorage.setItem("includeBreakfast", val);
-                window.dispatchEvent(new Event("localStorageUpdated"));
-              }}
-            />
-            {t("actions.breakfastIncluded", "Breakfast included")}
           </label>
         </div>
       </div>

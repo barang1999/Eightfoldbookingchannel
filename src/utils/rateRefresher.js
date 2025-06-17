@@ -9,7 +9,7 @@ const coerceDate = (d) => {
     : new Date(d.getFullYear(), d.getMonth(), d.getDate());
 };
 
-export async function refreshSelectedRooms(selectedRooms, stayPeriod, breakfastIncluded) {
+export async function refreshSelectedRooms(selectedRooms, stayPeriod) {
   const start = new Date(stayPeriod.startDate);
   const end = new Date(stayPeriod.endDate);
 
@@ -27,7 +27,7 @@ export async function refreshSelectedRooms(selectedRooms, stayPeriod, breakfastI
           propertyId: room.propertyId,
           startDate: stayPeriod.startDate,
           endDate: stayPeriod.endDate,
-          breakfast: room.breakfastIncluded === true ? "true" : "false",
+          breakfast: "true",
         });
 
 
@@ -87,7 +87,7 @@ export async function refreshSelectedRooms(selectedRooms, stayPeriod, breakfastI
   return refreshedRooms;
 }
 
-export async function refreshAllRoomRates(allRooms, stayPeriod, breakfastIncluded) {
+export async function refreshAllRoomRates(allRooms, stayPeriod) {
 
   const start = new Date(stayPeriod.startDate);
   const end = new Date(stayPeriod.endDate);
@@ -103,7 +103,7 @@ export async function refreshAllRoomRates(allRooms, stayPeriod, breakfastInclude
         // Skip rooms with missing roomType and name to avoid 400 Bad Request
         if (!room.roomType && !room.name) {
           console.warn("⚠️ Skipping room with missing roomType and name:", room);
-          return { ...room, price: 0, unavailable: true, breakfastIncluded, promotionBookableStartDate: null, promotionBookableEndDate: null };
+          return { ...room, price: 0, unavailable: true, promotionBookableStartDate: null, promotionBookableEndDate: null };
         }
         const params = new URLSearchParams({
           roomType: (room.roomType || room.name || "").toLowerCase(),
@@ -111,7 +111,7 @@ export async function refreshAllRoomRates(allRooms, stayPeriod, breakfastInclude
           propertyId: room.propertyId,
           startDate: stayPeriod.startDate,
           endDate: stayPeriod.endDate,
-          breakfast: breakfastIncluded ? "true" : "false",
+          breakfast: "true",
         });
 
         
@@ -122,7 +122,7 @@ export async function refreshAllRoomRates(allRooms, stayPeriod, breakfastInclude
           updatedData = await response.json();
         } catch (fetchError) {
           console.error("❌ Fetch error for room:", room.roomType || room.name, fetchError);
-          return { ...room, price: 0, unavailable: true, breakfastIncluded: breakfastIncluded, promotionBookableStartDate: null, promotionBookableEndDate: null };
+          return { ...room, price: 0, unavailable: true, promotionBookableStartDate: null, promotionBookableEndDate: null };
         }
 
         const qty = room.quantity || 1;
@@ -133,7 +133,6 @@ export async function refreshAllRoomRates(allRooms, stayPeriod, breakfastInclude
           roomType: room.roomType || room.name || "",
           propertyId: room.propertyId,
           nights: nights,
-          breakfastIncluded: breakfastIncluded,
           unavailable: updatedData?.availability === false || updatedData?.roomsToSell === 0,
           availability: updatedData?.availability ?? true,
           roomsToSell: updatedData?.roomsToSell ?? 0,
@@ -159,7 +158,8 @@ export async function refreshAllRoomRates(allRooms, stayPeriod, breakfastInclude
             basePriceRoomOnly: updatedData.basePriceRoomOnly,
             promotionPriceWithBreakfast:
               updatedData.promotionPriceWithBreakfast ??
-              (breakfastIncluded ? updatedData.promotionPrice : updatedData.promotionRoomOnlyRate) ??
+              updatedData.promotionPrice ??
+              updatedData.promotionRoomOnlyRate ??
               updatedData.promotionPrice,
             promotionRoomOnlyRate: updatedData.promotionRoomOnlyRate ?? updatedData.promotionPrice,
             originalPriceWithBreakfast:
@@ -168,7 +168,8 @@ export async function refreshAllRoomRates(allRooms, stayPeriod, breakfastInclude
               updatedData.originalRoomOnlyRate,
             promoWithBF:
               updatedData.promotionPriceWithBreakfast ??
-              (breakfastIncluded ? updatedData.promotionPrice : updatedData.promotionRoomOnlyRate) ??
+              updatedData.promotionPrice ??
+              updatedData.promotionRoomOnlyRate ??
               updatedData.promotionPrice ?? null,
             promoRoomOnly: updatedData.promotionRoomOnlyRate ?? updatedData.promotionPrice ?? null,
             netBooked: updatedData.netBooked ?? 0,
@@ -183,7 +184,7 @@ export async function refreshAllRoomRates(allRooms, stayPeriod, breakfastInclude
         }
       } catch (error) {
         console.error("❌ Unexpected error refreshing room:", room.roomType || room.name, error);
-        return { ...room, price: 0, unavailable: true, breakfastIncluded: breakfastIncluded, promotionBookableStartDate: null, promotionBookableEndDate: null };
+        return { ...room, price: 0, unavailable: true, promotionBookableStartDate: null, promotionBookableEndDate: null };
       }
     })
   );
