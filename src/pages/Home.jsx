@@ -390,34 +390,39 @@ const HomeContent = () => {
                   ))}
                 </div>
               ) : rooms && rooms.length > 0 ? (
-                [...rooms].sort((a, b) => {
-                  const getSortValue = (r) => {
-                    if (r.unavailable || r.roomsToSell <= 0 || r.netBooked > (r.roomsToSell ?? 0)) return 1;
-                    return 0;
-                  };
-                  return getSortValue(a) - getSortValue(b);
-                }).map((room, idx) => {
-                  const fallbackRoom = {
-                    ...room,
-                    roomsToSell: room.roomsToSell ?? 0,
-                    availability: room.availability ?? false,
-                    unavailable: room.unavailable ?? (room.roomsToSell === 0 || room.availability === false)
-                  };
-                  return (
-                    <div key={idx} className="mb-6">
-                      <RoomCard
-                        room={fallbackRoom}
-                        propertyId={property._id}
-                        startDate={new Date(dateRange.startDate)}
-                        endDate={new Date(dateRange.endDate)}
-                        breakfastIncluded={breakfastIncluded}
-                        onAddRoom={() => {}}
-                        nights={nights}
-                        loadingRate={loading}
-                      />
-                    </div>
-                  );
-                })
+                [...rooms]
+                  .sort((a, b) => {
+                    const isAUnavailable = a.unavailable || a.roomsToSell <= 0 || a.netBooked > (a.roomsToSell ?? 0);
+                    const isBUnavailable = b.unavailable || b.roomsToSell <= 0 || b.netBooked > (b.roomsToSell ?? 0);
+                    if (isAUnavailable && !isBUnavailable) return 1;
+                    if (!isAUnavailable && isBUnavailable) return -1;
+
+                    const getPrice = (room) =>
+                      room.promotionPriceWithBreakfast ?? room.basePriceWithBreakfast ?? room.price ?? 999999;
+                    return getPrice(a) - getPrice(b);
+                  })
+                  .map((room, idx) => {
+                    const fallbackRoom = {
+                      ...room,
+                      roomsToSell: room.roomsToSell ?? 0,
+                      availability: room.availability ?? false,
+                      unavailable: room.unavailable ?? (room.roomsToSell === 0 || room.availability === false)
+                    };
+                    return (
+                      <div key={idx} className="mb-6">
+                        <RoomCard
+                          room={fallbackRoom}
+                          propertyId={property._id}
+                          startDate={new Date(dateRange.startDate)}
+                          endDate={new Date(dateRange.endDate)}
+                          breakfastIncluded={breakfastIncluded}
+                          onAddRoom={() => {}}
+                          nights={nights}
+                          loadingRate={loading}
+                        />
+                      </div>
+                    );
+                  })
               ) : (
                 <div className="text-center text-gray-500">No rooms available.</div>
               )}
