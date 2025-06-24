@@ -5,6 +5,7 @@ import { SelectedDateProvider } from "./contexts/SelectedDateContext";
 import { CurrencyProvider } from "./contexts/CurrencyProvider";
 import { SelectedServicesProvider } from "./contexts/SelectedServicesContext"; // ✅ Add this
 import { PropertyProvider } from "./contexts/PropertyContext";
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   useEffect(() => {
@@ -24,6 +25,7 @@ function App() {
               <div className="font-sans bg-gray-50 min-h-screen">
                 <Outlet />
               </div>
+              <Analytics />
             </SelectedServicesProvider>
           </SelectedRoomsProvider>
         </SelectedDateProvider>
