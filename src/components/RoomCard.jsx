@@ -227,14 +227,23 @@ const RoomCard = ({ room, propertyId, onAddRoom, loadingRate }) => {
               <div className="text-xs font-medium text-gray-700 uppercase tracking-wide mb-1">
                 {t("actions.specialOffer", { defaultValue: "Special Offer" })}
               </div>
-              <div className="flex flex-wrap gap-2 mb-1 justify-end">
-                <span className="inline-block text-[11px] font-medium text-emerald-700  border border-emerald-300 px-2 py-0.5 rounded-full shadow-sm">
-                  {t("actions.breakfastIncluded", { defaultValue: "Breakfast Included" })}
-                </span>
-                {hasPromotion && (
-                  <span className="inline-block text-[11px] font-medium text-red-700  border border-red-300 px-2 py-0.5 rounded-full shadow-sm">
-                    {t("actions.promoRate", { defaultValue: "Promo Rate" })}
+              <div className="flex flex-col items-end gap-1 mb-1">
+                <div>
+                  <span className="inline-block text-[11px] font-medium text-emerald-700 border border-emerald-300 px-2 py-0.5 rounded-full shadow-sm">
+                    {t("actions.breakfastIncluded", { defaultValue: "Breakfast Included" })}
                   </span>
+                </div>
+                <div>
+                  <span className="inline-block text-[11px] font-medium text-[#A58E63] border border-[#A58E63] px-2 py-0.5 rounded-full shadow-sm">
+                    No credit card required
+                  </span>
+                </div>
+                {hasPromotion && (
+                  <div>
+                    <span className="inline-block text-[11px] font-medium text-red-700 border border-red-300 px-2 py-0.5 rounded-full shadow-sm">
+                      {t("actions.promoRate", { defaultValue: "Promo Rate" })}
+                    </span>
+                  </div>
                 )}
               </div>
               {loadingRate ? (

@@ -50,8 +50,8 @@ const TotalPriceSummary = () => {
         TOTAL <span className="text-sm text-gray-400">(fees and taxes included)</span>
       </div>
       <div className="flex justify-between py-1">
-        <div>Subtotal</div>
-        <div>{format(subtotal)}</div>
+        <div>Subtotal (excl. VAT)</div>
+        <div>{format(subtotal - taxAmount)}</div>
       </div>
       <div className="flex justify-between py-1">
         <div>Includes VAT</div>

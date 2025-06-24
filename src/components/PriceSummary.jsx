@@ -339,8 +339,8 @@ useEffect(() => {
           </div>
           <div className="text-right space-y-1 text-sm text-gray-700">
             <div className="flex justify-between">
-              <span>Subtotal</span>
-              <span>{formatCurrency(totalBeforeTax, exchangeRate, currency)}</span>
+              <span>Subtotal (excl. VAT)</span>
+              <span>{formatCurrency(totalBeforeTax - totalVat, exchangeRate, currency)}</span>
             </div>
             <div className="flex justify-between">
               <span>Includes VAT</span>

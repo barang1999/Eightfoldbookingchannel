@@ -164,9 +164,9 @@ const PaymentConfirmationPage = ({ propertyId: passedPropertyId }) => {
           0;
         const vat = propertyData?.policy?.vat?.percentage || 10;
         console.log("[🔢 VAT used]", vat);
-        const totalBeforeTax = baseRate;
-        const taxesAndFees = baseRate * vat / (100 + vat); // VAT extracted from inclusive total
-        const totalAfterTax = baseRate; // Already includes VAT
+        const totalAfterTax = baseRate;
+        const totalBeforeTax = baseRate * 100 / (100 + vat);
+        const taxesAndFees = totalAfterTax - totalBeforeTax;
         const perNightRate = nights > 0 ? baseRate / nights : 0;
         const perNightPrices = Array.from({ length: nights }, () => perNightRate);
         const rateCurrency = "USD";
