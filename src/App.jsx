@@ -6,8 +6,10 @@ import { CurrencyProvider } from "./contexts/CurrencyProvider";
 import { SelectedServicesProvider } from "./contexts/SelectedServicesContext"; // ✅ Add this
 import { PropertyProvider } from "./contexts/PropertyContext";
 import { Analytics } from '@vercel/analytics/react';
+import { usePageTracking } from './hooks/usePageTracking';
 
 function App() {
+  usePageTracking();
   useEffect(() => {
     const setAppHeight = () => {
       document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
