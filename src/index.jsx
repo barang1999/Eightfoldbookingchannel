@@ -23,6 +23,8 @@ import ModifyConfirmationPage from './pages/ModifyConfirmationPage.jsx';
 import ModifySuccessPage from './pages/ModifySuccessPage.jsx';
 import { SelectedRoomsProvider } from './contexts/SelectedRoomsContext';
 import TokenLogin from './pages/TokenLogin.jsx';
+import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 
 function PathTracker() {
   const location = useLocation();
@@ -51,6 +53,8 @@ function RouterApp() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/token-login" element={<TokenLogin />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/confirmation" element={<PaymentConfirmationPage />} />
             <Route path="/modification-confirmation" element={<ModifyConfirmationPage />} />
             <Route path="/modification-success/:bookingId" element={<ModifySuccessPage />} />
