@@ -8,8 +8,10 @@ export function getOrCreateSession() {
 
   if (!stored.sessionId || isExpired) {
     const newSessionId = crypto.randomUUID();
+    const newTrackingId = crypto.randomUUID();
     const newData = {
       sessionId: newSessionId,
+      trackingId: newTrackingId,
       lastActivity: now
     };
     localStorage.setItem('tracking', JSON.stringify(newData));
