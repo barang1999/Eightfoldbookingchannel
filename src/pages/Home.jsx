@@ -78,17 +78,15 @@ const HomeContent = () => {
     const params = new URLSearchParams(window.location.search);
     const checkInStr = params.get("checkIn");
     const checkOutStr = params.get("checkOut");
-    const parseLocalDate = (str) => {
-      const [year, month, day] = str.split("-").map(Number);
-      return new Date(year, month - 1, day);
-    };
-    const checkIn = checkInStr ? parseLocalDate(checkInStr) : null;
-    const checkOut = checkOutStr ? parseLocalDate(checkOutStr) : null;
+    const parseUTCDate = (str) => new Date(`${str}T00:00:00Z`);
+
+    const checkIn = checkInStr ? parseUTCDate(checkInStr) : null;
+    const checkOut = checkOutStr ? parseUTCDate(checkOutStr) : null;
     const adults = parseInt(params.get("adults"), 10);
     const children = parseInt(params.get("children"), 10);
 
     // Debugging: log extracted values from URL
-    console.log("🔍 Extracted from URL:");
+    console.log("🔍 Extracted from URL (UTC):");
     console.log("checkIn:", checkInStr);
     console.log("checkOut:", checkOutStr);
     console.log("adults:", adults);
@@ -99,7 +97,7 @@ const HomeContent = () => {
       setDateRange(newDateRange);
       localStorage.setItem("selectedStartDate", checkInStr);
       localStorage.setItem("selectedEndDate", checkOutStr);
-      console.log("✅ setDateRange to:", newDateRange);
+      console.log("✅ setDateRange to (UTC):", newDateRange);
       
       // Directly trigger the refresh with the new date range
       triggerRoomRefresh(newDateRange);
