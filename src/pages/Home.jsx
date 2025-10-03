@@ -95,14 +95,14 @@ const HomeContent = () => {
     console.log("children:", children);
 
     if (checkIn && checkOut) {
-      setDateRange({
-        startDate: checkIn,
-        endDate: checkOut
-      });
+      const newDateRange = { startDate: checkIn, endDate: checkOut };
+      setDateRange(newDateRange);
       localStorage.setItem("selectedStartDate", checkInStr);
       localStorage.setItem("selectedEndDate", checkOutStr);
-      // Debugging: log setDateRange
-      console.log("✅ setDateRange to:", { startDate: checkIn, endDate: checkOut });
+      console.log("✅ setDateRange to:", newDateRange);
+      
+      // Directly trigger the refresh with the new date range
+      triggerRoomRefresh(newDateRange);
     }
 
     if (!isNaN(adults) || !isNaN(children)) {
@@ -115,11 +115,8 @@ const HomeContent = () => {
       // Debugging: log setGuestRooms
       console.log("✅ setGuestRooms to:", guests);
     }
-
-    if (checkIn || checkOut || !isNaN(adults) || !isNaN(children)) {
-      setShouldRefresh(true);
-    }
   }, []);
+
   const [rooms, setRooms] = useState([]);
   const [dateRange, setDateRange] = useState({
     startDate: "2025-05-29",
@@ -129,7 +126,6 @@ const HomeContent = () => {
   const [guestRooms, setGuestRooms] = useState([{ adults: 2, children: 0, childrenAges: [] }]);
   const [showMobilePriceSummary, setShowMobilePriceSummary] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [shouldRefresh, setShouldRefresh] = useState(false);
 
   const { selectedRooms, updateRoomsAfterRateRefresh } = useSelectedRooms();
 
@@ -139,12 +135,13 @@ const HomeContent = () => {
       try {
         const parsed = JSON.parse(stored);
         if (parsed.startDate && parsed.endDate) {
-          setDateRange({
+          const newDateRange = {
             startDate: parsed.startDate,
             endDate: parsed.endDate
-          });
+          };
+          setDateRange(newDateRange);
           setBreakfastIncluded(!!parsed.breakfastIncluded);
-          setShouldRefresh(true);
+          triggerRoomRefresh(newDateRange); // Trigger refresh
           setTimeout(() => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }, 100);
@@ -164,12 +161,13 @@ const HomeContent = () => {
       try {
         const parsed = JSON.parse(stored);
         if (parsed.startDate && parsed.endDate) {
-          setDateRange({
+          const newDateRange = {
             startDate: parsed.startDate,
             endDate: parsed.endDate
-          });
+          };
+          setDateRange(newDateRange);
           setBreakfastIncluded(!!parsed.breakfastIncluded);
-          setShouldRefresh(true);
+          triggerRoomRefresh(newDateRange); // Trigger refresh
           setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
         }
       } catch (err) {
@@ -181,7 +179,7 @@ const HomeContent = () => {
   useEffect(() => {
     const handleRoomRefresh = () => {
       console.log("📱 Mobile triggerRoomRefresh event received.");
-      setShouldRefresh(true);
+      triggerRoomRefresh(); // Trigger refresh
     };
     window.addEventListener("triggerRoomRefresh", handleRoomRefresh);
     return () => {
@@ -248,10 +246,11 @@ const HomeContent = () => {
   }, [property, dateRange.startDate, dateRange.endDate, breakfastIncluded]);
   */
 
-  const triggerRoomRefresh = async () => {
+  const triggerRoomRefresh = async (newDateRange) => {
     setLoading(true);
     try {
-      const availableRooms = await fetchRooms(property._id, new Date(dateRange.startDate), new Date(dateRange.endDate));
+      const range = newDateRange || dateRange;
+      const availableRooms = await fetchRooms(property._id, new Date(range.startDate), new Date(range.endDate));
 
       if (!availableRooms || availableRooms.length === 0) {
         setRooms([]);
@@ -261,18 +260,15 @@ const HomeContent = () => {
       const latestBreakfastIncluded = localStorage.getItem("includeBreakfast") === "true";
 
       const formattedRange = {
-        startDate: dateRange.startDate,
-        endDate: dateRange.endDate,
+        startDate: range.startDate,
+        endDate: range.endDate,
       };
 
       const refreshed = await refreshAllRoomRates(availableRooms, formattedRange, latestBreakfastIncluded);
-      // 🍳 Debug log after rates refresh
-    
-
 
       const isSame = (a, b) =>
         a.length === b.length &&
-        a.every((room, idx) =>
+        a.every((room, idx) => 
           room._id === b[idx]._id &&
           room.price === b[idx].price &&
           room.perNight === b[idx].perNight &&
@@ -296,20 +292,8 @@ const HomeContent = () => {
     }
   };
 
-  useEffect(() => {
-    if (shouldRefresh) {
-      triggerRoomRefresh().finally(() => setShouldRefresh(false));
-    }
-  }, [shouldRefresh]);
-
   const handleSearchDate = async () => {
-    setLoading(true);
-    try {
-      // Removed direct fetch and refresh logic
-    } finally {
-      setLoading(false);
-      setShouldRefresh(true);
-    }
+    triggerRoomRefresh();
   };
 
   const handleGuestSelection = (rooms) => {
@@ -317,30 +301,17 @@ const HomeContent = () => {
     setGuestRooms(rooms);
   };
 
-  // Add handleCalendarSearch for date + search synchronization
   const handleCalendarSearch = async (newDateRange) => {
-    const nights = Math.max(
-      1,
-      Math.ceil((new Date(dateRange.endDate) - new Date(dateRange.startDate)) / (1000 * 60 * 60 * 24))
-    );
     setDateRange(newDateRange);
-    setLoading(true);
-    try {
-      // Refresh selected room prices and update context before triggering room refresh
-      if (property?._id) {
-        const formattedRange = {
-          startDate: newDateRange.startDate,
-          endDate: newDateRange.endDate,
-        };
-        const refreshed = await refreshSelectedRooms(
-          selectedRooms,
-          formattedRange
-        );
-        updateRoomsAfterRateRefresh(refreshed);
-      }
-    } finally {
-      setLoading(false);
-      setShouldRefresh(true);
+    triggerRoomRefresh(newDateRange);
+
+    // Also refresh selected rooms in the cart
+    if (property?._id) {
+      const refreshedSelected = await refreshSelectedRooms(
+        selectedRooms,
+        newDateRange
+      );
+      updateRoomsAfterRateRefresh(refreshedSelected);
     }
   };
 
