@@ -116,9 +116,14 @@ const HomeContent = () => {
   }, []);
 
   const [rooms, setRooms] = useState([]);
-  const [dateRange, setDateRange] = useState({
-    startDate: "2025-05-29",
-    endDate: "2025-05-30"
+  const [dateRange, setDateRange] = useState(() => {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return {
+      startDate: today.toISOString().split("T")[0],
+      endDate: tomorrow.toISOString().split("T")[0],
+    };
   });
   const [breakfastIncluded, setBreakfastIncluded] = useState(false);
   const [guestRooms, setGuestRooms] = useState([{ adults: 2, children: 0, childrenAges: [] }]);
