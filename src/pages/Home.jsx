@@ -398,7 +398,7 @@ const HomeContent = () => {
                     );
                   })
               ) : (
-                <div className="text-center text-gray-500">No rooms available.</div>
+                <div className="text-center text-gray-500">No room found, please search the availablility</div>
               )}
 
               <HotelLocationMap propertyId={property._id} />
