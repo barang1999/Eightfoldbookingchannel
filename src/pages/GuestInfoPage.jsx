@@ -109,7 +109,9 @@ const GuestInfoPage = () => {
       guestInfo.firstName &&
       guestInfo.lastName &&
       guestInfo.email &&
-      guestInfo.phone;
+      guestInfo.phoneNumber &&
+      guestInfo.countryCode &&
+      guestInfo.nationality;
 
     const selectedBeds = JSON.parse(localStorage.getItem("selectedBeds") || "{}");
     console.log("🧠 All selectedRooms in confirm():", selectedRooms);

@@ -254,7 +254,7 @@ const GuestInfoForm = ({ user, showError }) => {
     lastName: '',
     email: '',
     countryCode: '',
-    phone: '',
+    phoneNumber: '',
     country: '',
     nationality: '',
     purpose: '',
@@ -346,29 +346,18 @@ const GuestInfoForm = ({ user, showError }) => {
         const lastName = rest.join(' ');
         // Debug: Log derived first and last name
 
-        const newForm = {
-          title: 'Mr',
-          countryCode: contactData.countryCode || '+855',
-          phone: contactData.phone || user.phoneNumber || '',
-          country: 'Cambodia',
-          nationality: 'Cambodian',
-          purpose: '',
-          firstName,
-          lastName,
-          email: user.email || '',
-          agree: false,
-          bedPreferences: {}
-        };
-        // Debug: Log final form object before setting
-
-        // Ensure newForm.title exists in titleOptions
-        if (!titleOptions.includes(newForm.title)) {
-          newForm.title = titleOptions[0];
-        }
-
         setForm((prev) => ({
-          ...prev,
-          ...newForm
+          title: prev.title || "Mr",
+          countryCode: prev.countryCode || contactData.countryCode || "+855",
+          phoneNumber: prev.phoneNumber || contactData.phone || user.phoneNumber || "",
+          country: prev.country || "Cambodia",
+          nationality: prev.nationality || "Cambodian",
+          purpose: prev.purpose || "",
+          firstName: prev.firstName || firstName,
+          lastName: prev.lastName || lastName,
+          email: prev.email || user.email || "",
+          agree: prev.agree || false,
+          bedPreferences: prev.bedPreferences || {}
         }));
         setSelectedTitle(newForm.title);
         setSelectedCode(newForm.countryCode);
@@ -531,11 +520,11 @@ const GuestInfoForm = ({ user, showError }) => {
             </div>
           </Combobox>
           <input
-            name="phone"
+            name="phoneNumber"
             placeholder="Phone Number*"
-            value={form.phone}
+            value={form.phoneNumber}
             onChange={handleChange}
-            className={`border p-2 rounded text-gray-600 font-light w-2/3${showError && !form.phone ? ' border-red-500' : ''}`}
+            className={`border p-2 rounded text-gray-600 font-light w-2/3${showError && !form.phoneNumber ? ' border-red-500' : ''}`}
             required
           />
         </div>

@@ -139,7 +139,9 @@ const PaymentConfirmationPage = ({ propertyId: passedPropertyId }) => {
       propertyId,
       fullName: guestInfo.fullName || `${guestInfo.firstName || ""} ${guestInfo.lastName || ""}`.trim(),
       email: guestInfo.email,
-      phone: guestInfo.phone,
+      phone: guestInfo.phoneNumber,
+      countryCode: guestInfo.countryCode,
+      nationality: guestInfo.nationality,
       checkIn: range?.from,
       checkOut: range?.to,
       price: Number(totalPrice),
@@ -649,7 +651,14 @@ const PaymentConfirmationPage = ({ propertyId: passedPropertyId }) => {
                     <PhoneCall className="w-4 h-4 text-gray-400" />
                     <span className="text-gray-500 text-xs font-medium">Phone:</span>
                     <span className="font-medium text-sm text-gray-700">
-                      {guestInfo.phone ? `${guestInfo.countryCode || ""} ${guestInfo.phone}` : "—"}
+                      {guestInfo.phoneNumber ? `${guestInfo.countryCode || ""} ${guestInfo.phoneNumber}` : "—"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Globe className="w-4 h-4 text-gray-400" />
+                    <span className="text-gray-500 text-xs font-medium">Nationality:</span>
+                    <span className="font-medium text-sm text-gray-700">
+                      {guestInfo.nationality || "—"}
                     </span>
                   </div>
                   {/* Total Guests */}
