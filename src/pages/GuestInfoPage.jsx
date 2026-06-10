@@ -20,6 +20,7 @@ import SupportButton from "../components/SupportButton";
 
 const hotel = JSON.parse(localStorage.getItem('selectedHotel')) || {};
 const propertyId = hotel.propertyId || hotel._id;
+if (propertyId) localStorage.setItem("propertyId", propertyId);
 
 const GuestInfoPage = () => {
   const location = useLocation();
@@ -105,13 +106,14 @@ const GuestInfoPage = () => {
     const guestInfo = JSON.parse(localStorage.getItem('guestInfo') || '{}');
     const agreed = guestInfo.agree === true;
 
-    const isGuestInfoValid =
-      guestInfo.firstName &&
-      guestInfo.lastName &&
-      guestInfo.email &&
-      guestInfo.phoneNumber &&
-      guestInfo.countryCode &&
-      guestInfo.nationality;
+    const isGuestInfoValid = Boolean(
+      guestInfo.firstName?.trim() &&
+      guestInfo.lastName?.trim() &&
+      guestInfo.email?.trim() &&
+      guestInfo.phoneNumber?.trim() &&
+      guestInfo.countryCode?.trim() &&
+      guestInfo.nationality?.trim()
+    );
 
     const selectedBeds = JSON.parse(localStorage.getItem("selectedBeds") || "{}");
     console.log("🧠 All selectedRooms in confirm():", selectedRooms);

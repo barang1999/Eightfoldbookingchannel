@@ -32,46 +32,49 @@ const RoomBedSelection = ({ bedPreferences, onBedChange, bedSelectionErrors = {}
   const didMountRef = useRef(false);
 
   useEffect(() => {
-    if (!didMountRef.current) {
-      didMountRef.current = true;
-      prevBedsRef.current = selectedBeds;
-      return;
-    }
-
-    if (typeof onBedChange === 'function') {
-      const allBedsSelected = selectedRooms.every(room => {
-        return !room.requiresBedChoice || selectedBeds[room.id];
-      });
-
-      const hasChanged = JSON.stringify(prevBedsRef.current) !== JSON.stringify(selectedBeds);
-
-      if (hasChanged && allBedsSelected) {
-        prevBedsRef.current = selectedBeds;
-        onBedChange(selectedBeds);
-      }
-    }
-  // Only trigger this useEffect when selectedBeds changes
-  }, [selectedBeds]);
-
-  useEffect(() => {
     const fetchRoomDetails = async () => {
       const map = {};
+      let hasUpdates = false;
       for (const room of selectedRooms) {
-        const { roomId, propertyId } = room;
-        try {
-          const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/rooms/${roomId}?propertyId=${propertyId}`);
-          const data = await res.json();
-          map[roomId] = data;
-        } catch (err) {
-          console.error(`[RoomBedSelection] Failed to fetch room ${roomId}:`, err);
+        if (!room.bedTypes || !room.roomId) continue;
+        // If already have data, don't necessarily need to fetch unless we want fresh data
+      }
+      
+      // More robust: fetch for rooms that don't have bedTypes yet
+      const roomsToFetch = selectedRooms.filter(r => !r.bedTypes && r.roomId);
+      
+      if (roomsToFetch.length > 0) {
+        for (const room of roomsToFetch) {
+          try {
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/rooms/${room.roomId}?propertyId=${room.propertyId || propertyId}`);
+            const data = await res.json();
+            map[room.roomId] = data;
+            hasUpdates = true;
+          } catch (err) {
+            console.error(`[RoomBedSelection] Failed to fetch room ${room.roomId}:`, err);
+          }
         }
       }
-      setFullRoomDataMap(map);
+
+      if (hasUpdates) {
+        setFullRoomDataMap(prev => ({ ...prev, ...map }));
+        setSelectedRooms(prev => prev.map(room => {
+          const details = map[room.roomId];
+          if (details) {
+            return {
+              ...room,
+              bedTypes: details.bedTypes,
+              doubleBedCount: details.doubleBedCount,
+              singleBedCount: details.singleBedCount,
+              requiresBedChoice: details.requiresBedChoice
+            };
+          }
+          return room;
+        }));
+      }
     };
 
-    if (selectedRooms.length > 0) {
-      fetchRoomDetails();
-    }
+    fetchRoomDetails();
   }, [selectedRooms]);
 
 

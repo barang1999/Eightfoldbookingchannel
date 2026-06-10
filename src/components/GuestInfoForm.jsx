@@ -299,10 +299,14 @@ const GuestInfoForm = ({ user, showError }) => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setForm((prev) => ({ ...prev, ...parsed }));
+        setForm((prev) => ({ 
+          ...prev, 
+          ...parsed,
+          nationality: parsed.nationality || prev.nationality || "Cambodian"
+        }));
         setSelectedTitle(parsed.title || "");
         setSelectedCode(parsed.countryCode || "");
-        setSelectedNationality(parsed.nationality || "");
+        setSelectedNationality(parsed.nationality || "Cambodian");
         setSelectedPurpose(parsed.purpose || "");
         setSelectedCountry(parsed.country || "");
         setPrefilled(true);
@@ -341,31 +345,32 @@ const GuestInfoForm = ({ user, showError }) => {
         // Debug: Log contact data from Firestore
 
         // Debug: Log user fullName and displayName
-        const fullName = user?.fullName || user?.displayName || '';
-        const [firstName = '', ...rest] = fullName.trim().split(' ');
-        const lastName = rest.join(' ');
-        // Debug: Log derived first and last name
+        const firstName = user?.fullName?.split(' ')[0] || user?.displayName?.split(' ')[0] || '';
+        const lastName = user?.fullName?.split(' ').slice(1).join(' ') || user?.displayName?.split(' ').slice(1).join(' ') || '';
 
-        setForm((prev) => ({
-          title: prev.title || "Mr",
-          countryCode: prev.countryCode || contactData.countryCode || "+855",
-          phoneNumber: prev.phoneNumber || contactData.phone || user.phoneNumber || "",
-          country: prev.country || "Cambodia",
-          nationality: prev.nationality || "Cambodian",
-          purpose: prev.purpose || "",
-          firstName: prev.firstName || firstName,
-          lastName: prev.lastName || lastName,
-          email: prev.email || user.email || "",
-          agree: prev.agree || false,
-          bedPreferences: prev.bedPreferences || {}
-        }));
-        setSelectedTitle(newForm.title);
-        setSelectedCode(newForm.countryCode);
-        setSelectedNationality(newForm.nationality);
-        setSelectedPurpose(newForm.purpose);
-        setSelectedCountry(newForm.country);
+        setForm((prev) => {
+          const merged = {
+            title: prev.title || "Mr",
+            countryCode: prev.countryCode || contactData.countryCode || "+855",
+            phoneNumber: prev.phoneNumber || contactData.phone || user.phoneNumber || "",
+            country: prev.country || "Cambodia",
+            nationality: prev.nationality || "Cambodian",
+            purpose: prev.purpose || "",
+            firstName: prev.firstName || firstName,
+            lastName: prev.lastName || lastName,
+            email: prev.email || user.email || "",
+            agree: prev.agree || false,
+            bedPreferences: prev.bedPreferences || {}
+          };
+          
+          setSelectedTitle(merged.title);
+          setSelectedCode(merged.countryCode);
+          setSelectedNationality(merged.nationality);
+          setSelectedPurpose(merged.purpose);
+          setSelectedCountry(merged.country);
+          return merged;
+        });
         setPrefilled(true);
-        handleChange({ target: { name: 'country', value: newForm.country } });
       } finally {
         setLoading(false);
       }
